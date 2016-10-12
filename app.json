@@ -1,0 +1,129 @@
+{
+	"id": "org.eurotronic",
+	"name": {
+		"en": "Eurotronic Technology (Z-Wave)"
+	},
+	"version": "0.7.0",
+	"compatibility": ">=0.10.4",
+	"description": {
+		"en": "Eurotronic Z-Wave devices for Homey",
+		"nl": "Eurotronic Z-Wave apparaten voor Homey"
+	},
+	"category": [
+		"climate"
+	],
+	"images": {
+		"large": "/assets/images/large.png",
+		"small": "/assets/images/small.png"
+	},
+	"author": {
+		"name": "R. Mengers",
+		"email": "caseda08@hotmail.com"
+	},
+	"flow": {
+		"actions": [
+			{
+				"id": "eco_temperature",
+				"title": {
+					"en": "Set eco temperature",
+					"nl": "Zet eco temperatuur"
+				},
+				"hint": {
+					"en": "This sets the Economy temperature and thermostat mode",
+					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "temperature",
+						"type": "range",
+						"min": 4,
+						"max": 30,
+						"step": 0.5
+					}
+				]
+			}
+		]
+	},
+	"drivers": [
+		{
+			"id": "comet_zwave",
+			"name": {
+				"en": "Eurotronic Comet Z-Wave Thermostat",
+				"nl": "Eurotronic Comet Z-Wave Thermostaat"
+			},
+			"zwave": {
+				"manufacturerId": 328,
+				"productTypeId": 2,
+				"productId": [
+					1
+				],
+				"learnmode": {
+					"image": "/drivers/comet_zwave/assets/learnmode.svg",
+					"instruction": {
+						"en": "Press the button inside the battery compartment for 5 seconds.",
+						"nl": "Druk 5 seconden op de knop binnen in het batterijcompartiment."
+					}
+				},
+				"associationGroups": [
+					1
+				],
+				"wakeUpInterval": 3600
+			},
+			"class": "thermostat",
+			"capabilities": [
+				"measure_battery",
+				"measure_temperature",
+				"target_temperature",
+				"thermostat_mode"
+			],
+			"capabilitiesOptions": {
+				"target_temperature": {
+					"min": 4,
+					"max": 28,
+					"step": 0.5
+				}
+			},
+			"images": {
+				"large": "/drivers/comet_zwave/assets/images/large.png",
+				"small": "/drivers/comet_zwave/assets/images/small.png"
+			},
+			"mobile": {
+				"components": [
+					{
+						"id": "icon",
+						"capabilities": [ ]
+					},
+					{
+						"id": "battery",
+						"capabilities": [
+							"measure_battery"
+						]
+					},
+					{
+						"id": "picker",
+						"capabilities": [
+							"thermostat_mode"
+						]
+					},
+					{
+						"id": "sensor",
+						"capabilities": [
+							"measure_temperature"
+						]
+					},
+					{
+						"id": "thermostat",
+						"capabilities": [
+							"target_temperature"
+						]
+					}
+				]
+			}
+		}
+	]
+}
