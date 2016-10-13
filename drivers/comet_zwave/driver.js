@@ -128,5 +128,5 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 		if(temp) {
 			callback(null, true);
 		}
-	} else return null;
+	} else callback(null, false);
 });
