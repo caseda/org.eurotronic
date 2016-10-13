@@ -109,24 +109,23 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 	if (node &&
 	args.hasOwnProperty("device") &&
 	args.hasOwnProperty("temperature")) {
-		const node = module.exports.nodes[args.device['token']];
-		
 		// make temperature a whole number
 		const temp = Math.round(args.temperature*10);
-		
-		// create 2 byte buffer of the value
-		const tempByte1 = Math.floor(temp/255);
-		const tempByte2 = Math.round(temp-(255*tempByte1));
-		
-		// Send command to module
-		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT'].THERMOSTAT_SETPOINT_SET({
-			'Level': new Buffer([11]), // Reserved = 0 (bits: 000), Setpoint Type = 11 (Energie Save Heating)(bits: 01011)
-			'Level2': new Buffer([34]), // Precision = 1 (bits: 001), Scale = 0 (bits: 00), Size = 2 (bits: 010)
-			'Value': new Buffer([tempByte1, tempByte2])
-		});
-		
 		if(temp) {
+			// create 2 byte buffer of the value
+			const tempByte1 = Math.floor(temp/255);
+			const tempByte2 = Math.round(temp-(255*tempByte1));
+
+			// Send command to module
+			node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT'].THERMOSTAT_SETPOINT_SET({
+				'Level': new Buffer([11]), // Reserved = 0 (bits: 000), Setpoint Type = 11 (Energie Save Heating)(bits: 01011)
+				'Level2': new Buffer([34]), // Precision = 1 (bits: 001), Scale = 0 (bits: 00), Size = 2 (bits: 010)
+				'Value': new Buffer([tempByte1, tempByte2])
+			});
+
 			callback(null, true);
-		}
+			
+		} else callback(null, false);
+		
 	} else callback(null, false);
 });
