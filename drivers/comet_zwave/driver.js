@@ -124,5 +124,9 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 			'Level2': new Buffer([34]), // Precision = 1 (bits: 001), Scale = 0 (bits: 00), Size = 2 (bits: 010)
 			'Value': new Buffer([tempByte1, tempByte2])
 		});
+		
+		if(temp) {
+			callback(null, true);
+		}
 	} else return null;
 });
