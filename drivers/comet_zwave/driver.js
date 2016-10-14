@@ -57,7 +57,7 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 				if (report.hasOwnProperty('Level2') &&
 					report.Level2.hasOwnProperty('Precision') &&
 					report.Level2.hasOwnProperty('Size')) {
-						const scale = 10 * report.Level2['Precision']; //parse value according to precision scale
+						const scale = Math.pow(10, report.Level2['Precision']); //parse value according to precision scale
 						return report['Value'].readUIntBE(0, report.Level2['Size']) / scale; 
 				} else return null;
 			}
