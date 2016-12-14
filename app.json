@@ -3,8 +3,8 @@
 	"name": {
 		"en": "Eurotronic Technology (Z-Wave)"
 	},
-	"version": "0.7.0",
-	"compatibility": ">=0.10.4",
+	"version": "0.9.0",
+	"compatibility": ">=1.0.1",
 	"description": {
 		"en": "Eurotronic Z-Wave devices for Homey",
 		"nl": "Eurotronic Z-Wave apparaten voor Homey"
@@ -21,6 +21,117 @@
 		"email": "caseda08@hotmail.com"
 	},
 	"flow": {
+		"triggers": [
+			{
+				"id": "euro_mode_changed",
+				"title": {
+					"en": "Thermostat mode changed",
+					"nl": "Thermostaat modus is veranderd"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					}
+				],
+				"tokens": [
+					{
+						"name": "mode",
+						"title": {
+							"en": "Mode"
+						},
+						"example": {
+							"en": "Heat"
+						}
+					}
+				]
+			},
+			{
+				"id": "euro_mode_changed_to",
+				"title": {
+					"en": "Thermostat mode changed to",
+					"nl": "Thermostaat modus is veranderd naar"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"conditions": [
+			{
+				"id": "euro_mode",
+				"title": {
+					"en": "Thermostat mode !{{is|isn't}}",
+					"nl": "Thermostaat modus !{{is|is niet}}"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
+			}
+		],
 		"actions": [
 			{
 				"id": "eco_temperature",
@@ -46,8 +157,91 @@
 						"step": 0.5
 					}
 				]
+			},
+			{
+				"id": "set_euro_mode",
+				"title": {
+					"en": "Set thermostat mode",
+					"nl": "Zet thermostaat modus"
+				},
+				"hint": {
+					"en": "Set the mode of the thermostatic",
+					"nl": "Zet de modus van de thermostaat kraan"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "euro_mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
 			}
 		]
+	},
+	"capabilities": {
+		"eurotronic_mode": {
+			"type": "enum",
+			"title": {
+				"en": "Thermostat mode",
+				"nl": "Thermostaat modus"
+			},
+			"desc": {
+				"en": "Mode of the thermostat",
+				"nl": "Modus van de thermostaat"
+			},
+			"values": [
+				{
+					"id": "Off",
+					"title": {
+						"en": "Off (6°C)",
+						"nl": "Uit (6°C)"
+					}
+				},
+				{
+					"id": "Heat",
+					"title": {
+						"en": "Comfortable",
+						"nl": "Comfortabel"
+					}
+				},
+				{
+					"id": "Energy Save Heat",
+					"title": {
+						"en": "Economic",
+						"nl": "Economische"
+					}
+				}
+			],
+			"getable": true,
+			"setable": true
+		}
 	},
 	"drivers": [
 		{
@@ -77,9 +271,9 @@
 			"class": "thermostat",
 			"capabilities": [
 				"measure_battery",
+				"eurotronic_mode",
 				"measure_temperature",
-				"target_temperature",
-				"thermostat_mode"
+				"target_temperature"
 			],
 			"capabilitiesOptions": {
 				"target_temperature": {
@@ -87,10 +281,6 @@
 					"max": 28,
 					"step": 0.5
 				}
-			},
-			"images": {
-				"large": "/drivers/comet_zwave/assets/images/large.png",
-				"small": "/drivers/comet_zwave/assets/images/small.png"
 			},
 			"mobile": {
 				"components": [
@@ -107,7 +297,7 @@
 					{
 						"id": "picker",
 						"capabilities": [
-							"thermostat_mode"
+							"eurotronic_mode"
 						]
 					},
 					{
@@ -123,6 +313,10 @@
 						]
 					}
 				]
+			},
+			"images": {
+				"large": "/drivers/comet_zwave/assets/images/large.png",
+				"small": "/drivers/comet_zwave/assets/images/small.png"
 			}
 		}
 	]

@@ -2,12 +2,15 @@
 
 const path = require('path');
 const ZwaveDriver = require('homey-zwavedriver');
+let deviceMode = "Heat";
 
 // http://www.pepper1.net/zwavedb/device/858
 
 module.exports = new ZwaveDriver( path.basename(__dirname), {
+	debug: true,
 	capabilities: {
 		'measure_battery': {
+			'getOnWakeUp': true,
 			'command_class': 'COMMAND_CLASS_BATTERY',
 			'command_get': 'BATTERY_GET',
 			'command_report': 'BATTERY_REPORT',
@@ -19,6 +22,7 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 		},
 
 		'measure_temperature': {
+			'getOnWakeUp': true,
 			'command_class': 'COMMAND_CLASS_SENSOR_MULTILEVEL',
 			'command_get': 'SENSOR_MULTILEVEL_GET',
 			'command_report': 'SENSOR_MULTILEVEL_REPORT',
@@ -30,102 +34,203 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 		},
 
 		'target_temperature': {
+			'getOnWakeUp': true,
 			'command_class': 'COMMAND_CLASS_THERMOSTAT_SETPOINT',
 			'command_get': 'THERMOSTAT_SETPOINT_GET',
-			'command_get_parser': () => {
+			'command_get_parser':  () => {
+				
+				if (deviceMode &&
+				deviceMode === "Energy Save Heat") {
+					return {
+						'Level': { 
+							'Setpoint Type': 'Energy Save Heating 2'
+						}
+					};
+				}
+				
 				return {
-					'Level': new Buffer([1]), // Reserved = 0 (bits: 000), Setpoint Type = 1 (Heating)(bits: 00001)
+					'Level': {
+						'Setpoint Type': 'Heating 1'
+					}
 				};
 			},
 			'command_set': 'THERMOSTAT_SETPOINT_SET',
 			'command_set_parser': value => {
-				// make temperature a whole number
-				const temp = Math.round(value*10);
 				
-				// create 2 byte buffer of the value
-				const tempByte1 = Math.floor(temp/255);
-				const tempByte2 = Math.round(temp-(255*tempByte1));
+				// Create 2 byte buffer of value, with value rounded to xx.5
+				let temp = new Buffer(2);
+				temp = writeUInt16BE((value * 2).toFixed() / 2 * 10);
 				
 				return {
-					'Level': new Buffer([1]), // Reserved = 0 (bits: 000), Setpoint Type = 1 (Heating)(bits: 00001)
-					'Level2': new Buffer([34]), // Precision = 1 (bits: 001), Scale = 0 (bits: 00), Size = 2 (bits: 010)
-					'Value': new Buffer([tempByte1, tempByte2]),
+					'Level': {
+						'Setpoint Type': 'Heating 1'
+					},
+					'Level2': {
+						'precision': 1, // Number has one decimal
+						'scale': 0, // No scale used
+						'size': 2 // Value = 2 Bytes
+					},
+					'Value': temp
 				};
 			},
 			'command_report': 'THERMOSTAT_SETPOINT_REPORT',
 			'command_report_parser': report => {
 				if (report.hasOwnProperty('Level2') &&
-					report.Level2.hasOwnProperty('Precision') &&
-					report.Level2.hasOwnProperty('Size')) {
-						const scale = Math.pow(10, report.Level2['Precision']); //parse value according to precision scale
-						return report['Value'].readUIntBE(0, report.Level2['Size']) / scale; 
-				} else return null;
+				report.Level2.hasOwnProperty('Precision') &&
+				report.Level2.hasOwnProperty('Size')) {
+					
+					// Parse value to xx.x according to size and precision
+					return report['Value'].readUIntBE(0, report.Level2['Size']) / Math.pow(10, report.Level2['Precision']);
+					
+				}
+				return null;
 			}
 		},
 
-		'thermostat_mode': {
+		'eurotronic_mode': {
+			'getOnWakeUp': true,
 			'command_class': 'COMMAND_CLASS_THERMOSTAT_MODE',
 			'command_get': 'THERMOSTAT_MODE_GET',
 			'command_set': 'THERMOSTAT_MODE_SET',
 			'command_set_parser': value => {
-				switch (value) {
-					case 'cool': // Future Mode: Off
-						value = 0;
-						break;
-					case 'heat': // Future Mode: Comfort
-						value = 1;
-						break;
-					case 'auto': // Future Mode: Economic
-						value = 11;
-						break;
-				}
-				if (typeof value !== "number") return null;
 				return {
-					'Level': new Buffer([value]),
-					'Manufacturer Data': new Buffer([0]), // Manufacturer Data = 0
+					'Level': {
+						'No of Manufacturer Data fields': 0,
+						'Mode': value
+					},
+					'Manufacturer Data': 0
 				};
 			},
 			'command_report': 'THERMOSTAT_MODE_REPORT',
 			'command_report_parser': report => {
 				if (report.hasOwnProperty('Level')) {
-					switch (report.Level['Mode']) {
-						case 'Off': 
-							return 'cool'; // Future Mode: Off
-						case 'Heat': 
-							return 'heat'; // Future Mode: Comfort
-						case 'Energy Save Heat': 
-							return 'auto'; // Future Mode: Economic
-						default:
-							return null;
-					}
-				} else return null;
+					/* Value: Off - Name: Off
+					 * Value: Heat - Name: Comfort
+					 * Value: Energy Save Heat - Name: Economic
+					 */
+					return report.Level['Mode'];
+				}
+				return null;
 			}
 		}
 	}
 });
 
+module.exports.on('initNode', token => {
+	const node = module.exports.nodes[token];
+	
+	if (node) {
+		node.instance.on('online', online => {
+			// Update device mode variable
+			if (online) {
+				module.exports.getSettings(node.device_data, (err, settings) => {
+					if (!err &&
+					settings &&
+					settings.hasOwnProperty("eurotronic_mode")) {
+						deviceMode = settings.eurotronic_mode;
+					}
+				});
+		});
+		
+		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_MODE'].on('report', (command, report) => {
+			if (command &&
+			command.hasOwnProperty("name") &&
+			command.name === "THERMOSTAT_MODE_REPORT" &&
+			report &&
+			report.hasOwnProperty("Level") &&
+			report.Level.hasOwnProperty("Mode")) {
+				const data = {
+					"mode": report.Level.Mode
+				}
+				
+				Homey.manager('flow').triggerDevice('euro_mode_changed', data, null, node.device_data);
+				Homey.manager('flow').triggerDevice('euro_mode_changed_to', null, data, node.device_data);
+			}
+		});
+	}
+});
+
+Homey.manager('flow').on('trigger.euro_mode_changed_to', (callback, args, state) => {
+    const node = module.exports.nodes[args.device['token']];
+	
+	if(args.hasOwnProperty("mode") &&
+	state.hasOwnProperty("mode") &&
+	args.mode === state.mode)
+		return callback(null, true);
+		
+	return callback(null, false);
+});
+
+Homey.manager('flow').on('condition.euro_mode', (callback, args) => {
+    const node = module.exports.nodes[args.device['token']];
+	
+	if (node &&
+	node.hasOwnProperty("state") &&
+	node.state.hasOwnProperty("eurotronic_mode") &&
+	args &&
+	args.hasOwnProperty("mode") &&
+	node.state.eurotronic_mode === args.mode)
+		return callback(null, true);
+	
+	return callback(null, false);
+});
+
 Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 	const node = module.exports.nodes[args.device['token']];
+	
 	if (node &&
-	args.hasOwnProperty("device") &&
 	args.hasOwnProperty("temperature")) {
-		// make temperature a whole number
-		const temp = Math.round(args.temperature*10);
-		if(temp) {
-			// create 2 byte buffer of the value
-			const tempByte1 = Math.floor(temp/255);
-			const tempByte2 = Math.round(temp-(255*tempByte1));
-
-			// Send command to module
-			node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT'].THERMOSTAT_SETPOINT_SET({
-				'Level': new Buffer([11]), // Reserved = 0 (bits: 000), Setpoint Type = 11 (Energie Save Heating)(bits: 01011)
-				'Level2': new Buffer([34]), // Precision = 1 (bits: 001), Scale = 0 (bits: 00), Size = 2 (bits: 010)
-				'Value': new Buffer([tempByte1, tempByte2])
-			});
-
-			callback(null, true);
-			
-		} else callback(null, false);
 		
-	} else callback(null, false);
+		// Create 2 byte buffer of value, rounded to xx.5
+		let temp = new Buffer(2);
+		temp = writeUInt16BE((args['temperature'] * 2).toFixed() / 2 * 10);
+		
+		// send the temperature + arguments to the module
+		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT']['THERMOSTAT_SETPOINT_SET'] ({
+			'Level': {
+				'Setpoint Type': 'Energy Save Heating 2'
+			},
+			'Level2': {
+				'precision': 1, // Number has one decimal
+				'scale': 0, // No scale used
+				'size': 2 // Value = 2 Bytes
+			},
+			'Value': temp
+		}, (err, result) => {
+			if (err) {
+				return callback(null, false);
+			
+			if(result === "TRANSMIT_COMPLETE_OK")
+				return callback(null, true);
+			
+			return callback(null, false);
+		});
+	}
+	return callback(null, false);
+});
+
+Homey.manager('flow').on('action.set_euro_mode', (callback, args) => {
+	const node = module.exports.nodes[args.device['token']];
+	
+	if (node &&
+	args.hasOwnProperty("euro_mode")) {
+		
+		// send the mode + arguments to the module
+		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_MODE']['THERMOSTAT_MODE_SET'] ({
+			'Level': {
+				'No of Manufacturer Data fields': 0,
+				'Mode': args.euro_mode
+			},
+			'Manufacturer Data': 0
+		}, (err, result) => {
+			if (err) {
+				return callback(null, false);
+			
+			if(result === "TRANSMIT_COMPLETE_OK")
+				return callback(null, true);
+			
+			return callback(null, false);
+		});
+	}
+	return callback(null, false);
 });
