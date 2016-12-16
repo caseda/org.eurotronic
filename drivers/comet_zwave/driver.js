@@ -59,7 +59,7 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 				
 				// Create 2 byte buffer of value, with value rounded to xx.5
 				let temp = new Buffer(2);
-				temp = writeUInt16BE((value * 2).toFixed() / 2 * 10);
+				temp.writeUInt16BE((value * 2).toFixed() / 2 * 10);
 				
 				return {
 					'Level': {
