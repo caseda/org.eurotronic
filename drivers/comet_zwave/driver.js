@@ -130,6 +130,7 @@ module.exports.on('initNode', token => {
 						deviceMode = settings.eurotronic_mode;
 					}
 				});
+			}
 		});
 		
 		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_MODE'].on('report', (command, report) => {
@@ -197,7 +198,7 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 			},
 			'Value': temp
 		}, (err, result) => {
-			if (err) {
+			if (err)
 				return callback(null, false);
 			
 			if(result === "TRANSMIT_COMPLETE_OK")
@@ -223,7 +224,7 @@ Homey.manager('flow').on('action.set_euro_mode', (callback, args) => {
 			},
 			'Manufacturer Data': 0
 		}, (err, result) => {
-			if (err) {
+			if (err)
 				return callback(null, false);
 			
 			if(result === "TRANSMIT_COMPLETE_OK")
