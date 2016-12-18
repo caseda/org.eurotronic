@@ -66,9 +66,9 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 						'Setpoint Type': 'Heating 1'
 					},
 					'Level2': {
-						'precision': 1, // Number has one decimal
-						'scale': 0, // No scale used
-						'size': 2 // Value = 2 Bytes
+						'Precision': 1, // Number has one decimal
+						'Scale': 0, // No scale used
+						'Size': 2 // Value = 2 Bytes
 					},
 					'Value': temp
 				};
@@ -98,7 +98,7 @@ module.exports = new ZwaveDriver( path.basename(__dirname), {
 						'No of Manufacturer Data fields': 0,
 						'Mode': value
 					},
-					'Manufacturer Data': 0
+					'Manufacturer Data': new Buffer([0])
 				};
 			},
 			'command_report': 'THERMOSTAT_MODE_REPORT',
@@ -192,9 +192,9 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 				'Setpoint Type': 'Energy Save Heating 2'
 			},
 			'Level2': {
-				'precision': 1, // Number has one decimal
-				'scale': 0, // No scale used
-				'size': 2 // Value = 2 Bytes
+				'Precision': 1, // Number has one decimal
+				'Scale': 0, // No scale used
+				'Size': 2 // Value = 2 Bytes
 			},
 			'Value': temp
 		}, (err, result) => {
@@ -222,7 +222,7 @@ Homey.manager('flow').on('action.set_euro_mode', (callback, args) => {
 				'No of Manufacturer Data fields': 0,
 				'Mode': args.euro_mode
 			},
-			'Manufacturer Data': 0
+			'Manufacturer Data': new Buffer([0])
 		}, (err, result) => {
 			if (err)
 				return callback(null, false);
