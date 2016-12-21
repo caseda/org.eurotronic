@@ -184,7 +184,7 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 		
 		// Create 2 byte buffer of value, rounded to xx.5
 		let temp = new Buffer(2);
-		temp = writeUInt16BE((args['temperature'] * 2).toFixed() / 2 * 10);
+		temp.writeUInt16BE((args['temperature'] * 2).toFixed() / 2 * 10);
 		
 		// send the temperature + arguments to the module
 		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT']['THERMOSTAT_SETPOINT_SET'] ({
