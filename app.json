@@ -23,7 +23,7 @@
 	"flow": {
 		"triggers": [
 			{
-				"id": "euro_mode_changed",
+				"id": "stella_euro_mode_changed",
 				"title": {
 					"en": "Thermostat mode changed",
 					"nl": "Thermostaat modus is veranderd"
@@ -32,7 +32,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "capabilities=eurotronic_mode"
+						"filter": "driver_id=stella_zwave"
 					}
 				],
 				"tokens": [
@@ -48,7 +48,7 @@
 				]
 			},
 			{
-				"id": "euro_mode_changed_to",
+				"id": "stella_euro_mode_changed_to",
 				"title": {
 					"en": "Thermostat mode changed to",
 					"nl": "Thermostaat modus is veranderd naar"
@@ -57,7 +57,73 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "capabilities=eurotronic_mode"
+						"filter": "driver_id=stella_zwave"
+					},
+					{
+						"name": "mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "comet_euro_mode_changed",
+				"title": {
+					"en": "Thermostat mode changed",
+					"nl": "Thermostaat modus is veranderd"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					}
+				],
+				"tokens": [
+					{
+						"name": "mode",
+						"title": {
+							"en": "Mode"
+						},
+						"example": {
+							"en": "Heat"
+						}
+					}
+				]
+			},
+			{
+				"id": "comet_euro_mode_changed_to",
+				"title": {
+					"en": "Thermostat mode changed to",
+					"nl": "Thermostaat modus is veranderd naar"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
 					},
 					{
 						"name": "mode",
@@ -91,7 +157,7 @@
 		],
 		"conditions": [
 			{
-				"id": "euro_mode",
+				"id": "stella_euro_mode",
 				"title": {
 					"en": "Thermostat mode !{{is|isn't}}",
 					"nl": "Thermostaat modus !{{is|is niet}}"
@@ -100,7 +166,48 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "capabilities=eurotronic_mode"
+						"filter": "driver_id=stella_zwave"
+					},
+					{
+						"name": "mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "comet_euro_mode",
+				"title": {
+					"en": "Thermostat mode !{{is|isn't}}",
+					"nl": "Thermostaat modus !{{is|is niet}}"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
 					},
 					{
 						"name": "mode",
@@ -134,7 +241,7 @@
 		],
 		"actions": [
 			{
-				"id": "eco_temperature",
+				"id": "stella_eco_temperature",
 				"title": {
 					"en": "Set eco temperature",
 					"nl": "Zet eco temperatuur"
@@ -147,7 +254,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "capabilities=eurotronic_mode"
+						"filter": "driver_id=stella_zwave"
 					},
 					{
 						"name": "temperature",
@@ -159,7 +266,7 @@
 				]
 			},
 			{
-				"id": "set_euro_mode",
+				"id": "stella_set_euro_mode",
 				"title": {
 					"en": "Set thermostat mode",
 					"nl": "Zet thermostaat modus"
@@ -172,7 +279,77 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "capabilities=eurotronic_mode"
+						"filter": "driver_id=stella_zwave"
+					},
+					{
+						"name": "euro_mode",
+						"type": "dropdown",
+						"values": [
+							{
+								"id": "Off",
+								"label": {
+									"en": "Off (6°C)",
+									"nl": "Uit (6°C)"
+								}
+							},
+							{
+								"id": "Heat",
+								"label": {
+									"en": "Comfortable",
+									"nl": "Comfortabel"
+								}
+							},
+							{
+								"id": "Energy Save Heat",
+								"label": {
+									"en": "Economic",
+									"nl": "Economische"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "comet_eco_temperature",
+				"title": {
+					"en": "Set eco temperature",
+					"nl": "Zet eco temperatuur"
+				},
+				"hint": {
+					"en": "This sets the Economy temperature and thermostat mode",
+					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "temperature",
+						"type": "range",
+						"min": 4,
+						"max": 30,
+						"step": 0.5
+					}
+				]
+			},
+			{
+				"id": "comet_set_euro_mode",
+				"title": {
+					"en": "Set thermostat mode",
+					"nl": "Zet thermostaat modus"
+				},
+				"hint": {
+					"en": "Set the mode of the thermostatic",
+					"nl": "Zet de modus van de thermostaat kraan"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
 					},
 					{
 						"name": "euro_mode",

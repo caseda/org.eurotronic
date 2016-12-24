@@ -145,14 +145,14 @@ module.exports.on('initNode', token => {
 					"mode": report.Level.Mode
 				}
 				
-				Homey.manager('flow').triggerDevice('euro_mode_changed', data, null, node.device_data);
-				Homey.manager('flow').triggerDevice('euro_mode_changed_to', null, data, node.device_data);
+				Homey.manager('flow').triggerDevice('comet_euro_mode_changed', data, null, node.device_data);
+				Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, data, node.device_data);
 			}
 		});
 	}
 });
 
-Homey.manager('flow').on('trigger.euro_mode_changed_to', (callback, args, state) => {
+Homey.manager('flow').on('trigger.comet_euro_mode_changed_to', (callback, args, state) => {
     const node = module.exports.nodes[args.device['token']];
 	
 	if(args.hasOwnProperty("mode") &&
@@ -163,7 +163,7 @@ Homey.manager('flow').on('trigger.euro_mode_changed_to', (callback, args, state)
 	return callback(null, false);
 });
 
-Homey.manager('flow').on('condition.euro_mode', (callback, args) => {
+Homey.manager('flow').on('condition.comet_euro_mode', (callback, args) => {
     const node = module.exports.nodes[args.device['token']];
 	
 	if (node &&
@@ -177,7 +177,7 @@ Homey.manager('flow').on('condition.euro_mode', (callback, args) => {
 	return callback(null, false);
 });
 
-Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
+Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
 	const node = module.exports.nodes[args.device['token']];
 	
 	if (node &&
@@ -211,7 +211,7 @@ Homey.manager('flow').on('action.eco_temperature', (callback, args) => {
 	return callback(null, false);
 });
 
-Homey.manager('flow').on('action.set_euro_mode', (callback, args) => {
+Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
 	const node = module.exports.nodes[args.device['token']];
 	
 	if (node &&
