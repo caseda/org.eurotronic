@@ -500,8 +500,8 @@
 				]
 			},
 			"images": {
-				"large": "/drivers/comet_zwave/assets/images/large.png",
-				"small": "/drivers/comet_zwave/assets/images/small.png"
+				"large": "/drivers/stella_zwave/assets/images/large.png",
+				"small": "/drivers/stella_zwave/assets/images/small.png"
 			}
 		},
 		{
