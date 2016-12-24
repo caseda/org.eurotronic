@@ -4,7 +4,7 @@ const path = require('path');
 const ZwaveDriver = require('homey-zwavedriver');
 let deviceMode = "Heat";
 
-// http://www.pepper1.net/zwavedb/device/858
+// http://static.hashop.nl/Files/5/18000/18005/Attachments/Product/475M93yv078PGsEm699G23wj9i84D4Mj.pdf
 
 module.exports = new ZwaveDriver( path.basename(__dirname), {
 	capabilities: {

@@ -3,8 +3,8 @@
 	"name": {
 		"en": "Eurotronic Technology (Z-Wave)"
 	},
-	"version": "0.9.0",
-	"compatibility": ">=1.0.1",
+	"version": "1.0.0",
+	"compatibility": ">=1.0.5",
 	"description": {
 		"en": "Eurotronic Z-Wave devices for Homey",
 		"nl": "Eurotronic Z-Wave apparaten voor Homey"
@@ -32,7 +32,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "capabilities=eurotronic_mode"
 					}
 				],
 				"tokens": [
@@ -57,7 +57,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "capabilities=eurotronic_mode"
 					},
 					{
 						"name": "mode",
@@ -100,7 +100,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "capabilities=eurotronic_mode"
 					},
 					{
 						"name": "mode",
@@ -147,7 +147,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "capabilities=eurotronic_mode"
 					},
 					{
 						"name": "temperature",
@@ -172,7 +172,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "capabilities=eurotronic_mode"
 					},
 					{
 						"name": "euro_mode",
@@ -245,10 +245,93 @@
 	},
 	"drivers": [
 		{
+			"id": "stella_zwave",
+			"name": {
+				"en": "Stella Z-Wave Thermostat",
+				"nl": "Stella Z-Wave Thermostaat"
+			},
+			"zwave": {
+				"manufacturerId": 328,
+				"productTypeId": 1,
+				"productId": [
+					1
+				],
+				"learnmode": {
+					"image": "/drivers/stella_zwave/assets/learnmode.svg",
+					"instruction": {
+						"en": "Use the tool to Press the small button for 2.5 seconds.",
+						"nl": "Gebruik de tool om 2,5 seconden op de kleine knop te drukken."
+					}
+				},
+				"associationGroups": [
+					1
+				],
+				"associationGroupsOptions": {
+					"1": {
+						"hint": {
+							"en": "This is the controller group, it is not recommended to change this ID",
+							"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+						}
+					}
+				},
+				"wakeUpInterval": 3600
+			},
+			"class": "thermostat",
+			"capabilities": [
+				"measure_battery",
+				"eurotronic_mode",
+				"measure_temperature",
+				"target_temperature"
+			],
+			"capabilitiesOptions": {
+				"target_temperature": {
+					"min": 4,
+					"max": 28,
+					"step": 0.5
+				}
+			},
+			"mobile": {
+				"components": [
+					{
+						"id": "icon",
+						"capabilities": [ ]
+					},
+					{
+						"id": "battery",
+						"capabilities": [
+							"measure_battery"
+						]
+					},
+					{
+						"id": "picker",
+						"capabilities": [
+							"eurotronic_mode"
+						]
+					},
+					{
+						"id": "sensor",
+						"capabilities": [
+							"measure_temperature"
+						]
+					},
+					{
+						"id": "thermostat",
+						"capabilities": [
+							"target_temperature"
+						]
+					}
+				]
+			},
+			"images": {
+				"large": "/drivers/comet_zwave/assets/images/large.png",
+				"small": "/drivers/comet_zwave/assets/images/small.png"
+			}
+		},
+		{
 			"id": "comet_zwave",
 			"name": {
-				"en": "Eurotronic Comet Z-Wave Thermostat",
-				"nl": "Eurotronic Comet Z-Wave Thermostaat"
+				"en": "Comet Z-Wave Thermostat",
+				"nl": "Comet Z-Wave Thermostaat"
 			},
 			"zwave": {
 				"manufacturerId": 328,
@@ -266,6 +349,14 @@
 				"associationGroups": [
 					1
 				],
+				"associationGroupsOptions": {
+					"1": {
+						"hint": {
+							"en": "This is the controller group, it is not recommended to change this ID",
+							"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+						}
+					}
+				},
 				"wakeUpInterval": 3600
 			},
 			"class": "thermostat",
