@@ -34,3 +34,8 @@ Comet Z-Wave:
 Update mode support
 Updated Read me
 Changed error logging
+
+### Donate:
+If you like the work that I have done, and loved the magic.  
+Maybe you can think about filling my magic meter again:  
+[![Paypal Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CH7AVGUY9KEQJ)
