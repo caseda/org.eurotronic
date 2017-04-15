@@ -1,0 +1,3 @@
+[submodule "node-homey-zwavedriver"]
+	path = node-homey-zwavedriver
+	url = https://github.com/athombv/node-homey-zwavedriver.git

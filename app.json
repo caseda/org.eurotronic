@@ -3,7 +3,7 @@
 	"name": {
 		"en": "Eurotronic Technology (Z-Wave)"
 	},
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"compatibility": ">=1.0.5",
 	"description": {
 		"en": "Eurotronic Z-Wave devices for Homey",
@@ -83,8 +83,40 @@
 									"en": "Economic",
 									"nl": "Economische"
 								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
+								}
 							}
 						]
+					}
+				]
+			},
+			{
+				"id": "stella_euro_manual_position",
+				"title": {
+					"en": "Manual position changed",
+					"nl": "Handmatige positie veranderd"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=stella_zwave"
+					}
+				],
+				"tokens": [
+					{
+						"name": "value",
+						"title": {
+							"en": "%"
+						},
+						"example": {
+							"en": "%"
+						}
 					}
 				]
 			},
@@ -105,7 +137,8 @@
 					{
 						"name": "mode",
 						"title": {
-							"en": "Mode"
+							"en": "Mode",
+							"nl": "Modus"
 						},
 						"example": {
 							"en": "Heat"
@@ -149,8 +182,40 @@
 									"en": "Economic",
 									"nl": "Economische"
 								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
+								}
 							}
 						]
+					}
+				]
+			},
+			{
+				"id": "comet_euro_manual_position",
+				"title": {
+					"en": "Manual position changed",
+					"nl": "Handmatige positie veranderd"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					}
+				],
+				"tokens": [
+					{
+						"name": "value",
+						"title": {
+							"en": "%"
+						},
+						"example": {
+							"en": "%"
+						}
 					}
 				]
 			}
@@ -191,6 +256,13 @@
 								"label": {
 									"en": "Economic",
 									"nl": "Economische"
+								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
 								}
 							}
 						]
@@ -233,6 +305,13 @@
 									"en": "Economic",
 									"nl": "Economische"
 								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
+								}
 							}
 						]
 					}
@@ -240,31 +319,6 @@
 			}
 		],
 		"actions": [
-			{
-				"id": "stella_eco_temperature",
-				"title": {
-					"en": "Set eco temperature",
-					"nl": "Zet eco temperatuur"
-				},
-				"hint": {
-					"en": "This sets the Economy temperature and thermostat mode",
-					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "temperature",
-						"type": "range",
-						"min": 4,
-						"max": 30,
-						"step": 0.5
-					}
-				]
-			},
 			{
 				"id": "stella_set_euro_mode",
 				"title": {
@@ -305,13 +359,20 @@
 									"en": "Economic",
 									"nl": "Economische"
 								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
+								}
 							}
 						]
 					}
 				]
 			},
 			{
-				"id": "comet_eco_temperature",
+				"id": "stella_eco_temperature",
 				"title": {
 					"en": "Set eco temperature",
 					"nl": "Zet eco temperatuur"
@@ -324,7 +385,7 @@
 					{
 						"name": "device",
 						"type": "device",
-						"filter": "driver_id=comet_zwave"
+						"filter": "driver_id=stella_zwave"
 					},
 					{
 						"name": "temperature",
@@ -332,6 +393,34 @@
 						"min": 4,
 						"max": 30,
 						"step": 0.5
+					}
+				]
+			},
+			{
+				"id": "stella_manual_control",
+				"title": {
+					"en": "Set thermostatic position",
+					"nl": "Zet thermostaatkraan postitie"
+				},
+				"hint": {
+					"en": "This will set the thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+					"nl": "Dit zet de postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=stella_zwave"
+					},
+					{
+						"name": "value",
+						"type": "range",
+						"min": 0,
+						"max": 1,
+						"step": 0.01,
+						"labelMultiplier": 100,
+						"label": "%",
+						"labelDecimals": 2
 					}
 				]
 			},
@@ -375,8 +464,68 @@
 									"en": "Economic",
 									"nl": "Economische"
 								}
+							},
+							{
+								"id": "Manufacturer Specific",
+								"label": {
+									"en": "Manual",
+									"nl": "Handmatig"
+								}
 							}
 						]
+					}
+				]
+			},
+			{
+				"id": "comet_eco_temperature",
+				"title": {
+					"en": "Set eco temperature",
+					"nl": "Zet eco temperatuur"
+				},
+				"hint": {
+					"en": "This sets the Economy temperature and thermostat mode",
+					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "temperature",
+						"type": "range",
+						"min": 4,
+						"max": 30,
+						"step": 0.5
+					}
+				]
+			},
+			{
+				"id": "comet_manual_control",
+				"title": {
+					"en": "Set thermostatic position",
+					"nl": "Zet thermostaatkraan postitie"
+				},
+				"hint": {
+					"en": "This will set the thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+					"nl": "Dit zet de postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+				},
+				"args": [
+					{
+						"name": "device",
+						"type": "device",
+						"filter": "driver_id=comet_zwave"
+					},
+					{
+						"name": "value",
+						"type": "range",
+						"min": 0,
+						"max": 1,
+						"step": 0.01,
+						"label": "%",
+						"labelMultiplier": 100,
+						"labelDecimals": 2
 					}
 				]
 			}
@@ -414,10 +563,36 @@
 						"en": "Economic",
 						"nl": "Economische"
 					}
+				},
+				{
+					"id": "Manufacturer Specific",
+					"title": {
+						"en": "Manual",
+						"nl": "Handmatig"
+					}
 				}
 			],
 			"getable": true,
 			"setable": true
+		},
+		"eurotronic_manual_value": {
+			"type": "number",
+			"title": {
+				"en": "Manual value",
+				"nl": "Handmatige waarde"
+			},
+			"desc": {
+				"en": "The manual value of the valve",
+				"nl": "De handmatig waarde van de kraan"
+			},
+			"getable": true,
+			"setable": false,
+			"units": {
+				"en": "%"
+			},
+			"min": 0,
+			"max": 1,
+			"step": 0.01
 		}
 	},
 	"drivers": [
@@ -458,7 +633,8 @@
 				"measure_battery",
 				"eurotronic_mode",
 				"measure_temperature",
-				"target_temperature"
+				"target_temperature",
+				"eurotronic_manual_value"
 			],
 			"capabilitiesOptions": {
 				"target_temperature": {
@@ -541,7 +717,8 @@
 				"measure_battery",
 				"eurotronic_mode",
 				"measure_temperature",
-				"target_temperature"
+				"target_temperature",
+				"eurotronic_manual_value"
 			],
 			"capabilitiesOptions": {
 				"target_temperature": {

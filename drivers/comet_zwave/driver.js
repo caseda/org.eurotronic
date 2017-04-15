@@ -2,237 +2,274 @@
 
 const path = require('path');
 const ZwaveDriver = require('homey-zwavedriver');
-let deviceMode = "Heat";
 
-// http://www.pepper1.net/zwavedb/device/858
+// https://www.eurotronic.org/fileadmin/user_upload/eurotronic.org/Download-BAL-WB/Comet-Z-wave/Comet-zwave-BDA_eng.pdf
 
-module.exports = new ZwaveDriver( path.basename(__dirname), {
+module.exports = new ZwaveDriver(path.basename(__dirname), {
 	capabilities: {
-		'measure_battery': {
-			'getOnWakeUp': true,
-			'command_class': 'COMMAND_CLASS_BATTERY',
-			'command_get': 'BATTERY_GET',
-			'command_report': 'BATTERY_REPORT',
-			'command_report_parser': report => {
-				if (report['Battery Level'] === "battery low warning") return 1;
-				
-				if (report.hasOwnProperty('Battery Level (Raw)'))
-					return report['Battery Level (Raw)'][0];
-				
-				return null
-			}
-		},
-
-		'measure_temperature': {
-			'getOnWakeUp': true,
-			'command_class': 'COMMAND_CLASS_SENSOR_MULTILEVEL',
-			'command_get': 'SENSOR_MULTILEVEL_GET',
-			'command_report': 'SENSOR_MULTILEVEL_REPORT',
-			'command_report_parser': report => {
-				if (report['Sensor Type'] !== 'Temperature (version 1)') return null;
-				
-				return report['Sensor Value (Parsed)'];
-			}
-		},
-
-		'target_temperature': {
-			'getOnWakeUp': true,
-			'command_class': 'COMMAND_CLASS_THERMOSTAT_SETPOINT',
-			'command_get': 'THERMOSTAT_SETPOINT_GET',
-			'command_get_parser':  () => {
-				
-				if (deviceMode &&
-				deviceMode === "Energy Save Heat") {
-					return {
-						'Level': { 
-							'Setpoint Type': 'Energy Save Heating 2'
-						}
-					};
-				}
-				
-				return {
-					'Level': {
-						'Setpoint Type': 'Heating 1'
+		measure_battery: {
+			getOnWakeUp: true,
+			command_class: 'COMMAND_CLASS_BATTERY',
+			command_get: 'BATTERY_GET',
+			command_report: 'BATTERY_REPORT',
+			command_report_parser: (report, node) => {
+				if (typeof report['Battery Level'] === 'string' && report['Battery Level'] === 'battery low warning') {
+					if (typeof node.state !== 'undefined' && (typeof node.state.alarm_battery === 'undefined' || node.state.alarm_battery !== true)) {
+						node.state.alarm_battery = true;
+						module.exports.realtime(node.device_data, 'alarm_battery', true);
 					}
-				};
-			},
-			'command_set': 'THERMOSTAT_SETPOINT_SET',
-			'command_set_parser': value => {
-				
-				// Create 2 byte buffer of value, with value rounded to xx.5
-				let temp = new Buffer(2);
-				temp.writeUIntBE((value * 2).toFixed() / 2 * 10, 0, 2);
-				
-				return {
-					'Level': {
-						'Setpoint Type': 'Heating 1'
-					},
-					'Level2': {
-						'Precision': 1, // Number has one decimal
-						'Scale': 0, // No scale used
-						'Size': 2 // Value = 2 Bytes
-					},
-					'Value': temp
-				};
-			},
-			'command_report': 'THERMOSTAT_SETPOINT_REPORT',
-			'command_report_parser': report => {
-				if (report.hasOwnProperty('Level2') &&
-				report.Level2.hasOwnProperty('Precision') &&
-				report.Level2.hasOwnProperty('Size')) {
-					
-					// Parse value to xx.x according to size and precision
-					return report['Value'].readUIntBE(0, report.Level2['Size']) / Math.pow(10, report.Level2['Precision']);
+					return 1;
+				}
+				if (typeof report['Battery Level (Raw)'] !== 'undefined') {
+					if (typeof node.state !== 'undefined' && (typeof node.state.alarm_battery === 'undefined' || node.state.alarm_battery !== false)) {
+						node.state.alarm_battery = false;
+						module.exports.realtime(node.device_data, 'alarm_battery', false);
+					}
+					return report['Battery Level (Raw)'][0];
 				}
 				return null;
-			}
+			},
 		},
 
-		'eurotronic_mode': {
-			'getOnWakeUp': true,
-			'command_class': 'COMMAND_CLASS_THERMOSTAT_MODE',
-			'command_get': 'THERMOSTAT_MODE_GET',
-			'command_set': 'THERMOSTAT_MODE_SET',
-			'command_set_parser': value => {
+		alarm_battery: {
+			command_class: 'COMMAND_CLASS_BATTERY',
+		},
+
+		measure_temperature: {
+			getOnWakeUp: true,
+			command_class: 'COMMAND_CLASS_SENSOR_MULTILEVEL',
+			command_get: 'SENSOR_MULTILEVEL_GET',
+			command_report: 'SENSOR_MULTILEVEL_REPORT',
+			command_report_parser: report => {
+				if (report['Sensor Type'] === 'Temperature (version 1)') return report['Sensor Value (Parsed)'];
+				return null;
+			},
+		},
+
+		target_temperature: {
+			getOnWakeUp: true,
+			command_class: 'COMMAND_CLASS_THERMOSTAT_SETPOINT',
+			command_get: 'THERMOSTAT_SETPOINT_GET',
+			command_get_parser: node => {
+				let mode = 'Heating 1';
+				if (node && typeof node.state.eurotronic_mode !== 'undefined' && node.state.eurotronic_mode === 'Energy Save Heat') {
+					mode = 'Energy Save Heating 2';
+				}
 				return {
-					'Level': {
-						'No of Manufacturer Data fields': 0,
-						'Mode': value
+					Level: {
+						'Setpoint Type': mode,
 					},
-					'Manufacturer Data': new Buffer([0])
 				};
 			},
-			'command_report': 'THERMOSTAT_MODE_REPORT',
-			'command_report_parser': report => {
-				if (report.hasOwnProperty('Level')) {
-					/* Value: Off - Name: Off
-					 * Value: Heat - Name: Comfort
-					 * Value: Energy Save Heat - Name: Economic
-					 */
-					return report.Level['Mode'];
+			command_set: 'THERMOSTAT_SETPOINT_SET',
+			command_set_parser: value => {
+				// Create 2 byte buffer of value, with value rounded to xx.5
+				let newTemp = new Buffer(2);
+				newTemp.writeUIntBE((value * 2).toFixed() / 2 * 10, 0, 2);
+
+				return {
+					Level: {
+						'Setpoint Type': 'Heating 1'
+					},
+					Level2: {
+						Precision: 1, // Number has one decimal
+						Scale: 0, // No scale used
+						Size: 2, // Value = 2 Bytes
+					},
+					Value: newTemp,
+				};
+			},
+			command_report: 'THERMOSTAT_SETPOINT_REPORT',
+			command_report_parser: report => {
+				if (report &&
+					report.hasOwnProperty('Value') &&
+					report.hasOwnProperty('Level2') &&
+					typeof report.Level2.Precision === 'number' &&
+					typeof report.Level2.Size === 'number') {
+
+					let targetValue;
+					try {
+						targetValue = report.Value.readUIntBE(0, report.Level2.Size);
+					} catch (err) {
+						return null;
+					}
+					if (typeof targetValue === 'number') return targetValue / Math.pow(10, report.Level2.Precision);
+					return null;
 				}
 				return null;
-			}
-		}
-	}
+			},
+		},
+
+		eurotronic_mode: {
+			getOnWakeUp: true,
+			command_class: 'COMMAND_CLASS_THERMOSTAT_MODE',
+			command_get: 'THERMOSTAT_MODE_GET',
+			command_set: 'THERMOSTAT_MODE_SET',
+			command_set_parser: value => ({
+				Level: {
+					'No of Manufacturer Data fields': 0,
+					Mode: value,
+				},
+				'Manufacturer Data': new Buffer([0]),
+			}),
+			command_report: 'THERMOSTAT_MODE_REPORT',
+			command_report_parser: report => {
+				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) return report.Level.Mode;
+				return null;
+			},
+		},
+
+		eurotronic_manual_value: {
+			getOnWakeUp: true,
+			command_class: 'COMMAND_CLASS_SWITCH_MULTILEVEL',
+			command_get: 'SWITCH_MULTILEVEL_GET',
+			command_report: 'SWITCH_MULTILEVEL_REPORT',
+			command_report_parser: (report, node) => {
+				if (!report || !node) return null;
+				if (typeof report.Value === 'string') {
+					Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null, node.device_data);
+					return (report.Value === 'on/enable') ? 1.0 : 0.0;
+				}
+				if (typeof report.Value === 'number') {
+					Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report.Value / 99 }, null, node.device_data);
+					return report.Value / 99;
+				}
+				if (typeof report['Value (Raw)'] !== 'undefined') {
+					if (report['Value (Raw)'] === 254) return null;
+					if (report['Value (Raw)'][0] === 255) {
+						Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: 1.0 }, null, node.device_data);
+						return 1.0;
+					}
+					Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report['Value (Raw)'][0] / 99 }, null, node.device_data);
+					return report['Value (Raw)'][0] / 99;
+				}
+				return null;
+			},
+		},
+	},
 });
 
 module.exports.on('initNode', token => {
 	const node = module.exports.nodes[token];
-	
-	if (node) {
-		node.instance.on('online', online => {
-			// Update device mode variable
-			if (online) {
-				module.exports.getSettings(node.device_data, (err, settings) => {
-					if (!err &&
-					settings &&
-					settings.hasOwnProperty("eurotronic_mode")) {
-						deviceMode = settings.eurotronic_mode;
-					}
-				});
-			}
-		});
-		
-		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_MODE'].on('report', (command, report) => {
-			if (command &&
-			command.hasOwnProperty("name") &&
-			command.name === "THERMOSTAT_MODE_REPORT" &&
-			report &&
-			report.hasOwnProperty("Level") &&
-			report.Level.hasOwnProperty("Mode")) {
-				const data = {
-					"mode": report.Level.Mode
-				}
-				
-				Homey.manager('flow').triggerDevice('comet_euro_mode_changed', data, null, node.device_data);
-				Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, data, node.device_data);
+
+	if (node && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
+		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.on('report', (command, report) => {
+			if (command.name === 'THERMOSTAT_MODE_REPORT' && report && report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
+				Homey.manager('flow').triggerDevice('comet_euro_mode_changed', { mode: report.Level.Mode }, null, node.device_data);
+				Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
 			}
 		});
 	}
 });
 
 Homey.manager('flow').on('trigger.comet_euro_mode_changed_to', (callback, args, state) => {
-    const node = module.exports.nodes[args.device['token']];
-	
-	if(args.hasOwnProperty("mode") &&
-	state.hasOwnProperty("mode") &&
-	args.mode === state.mode)
-		return callback(null, true);
-		
-	return callback(null, false);
+	if (!args) return callback('arguments_error', false);
+	if (!state) return callback('state_error', false);
+
+	if(typeof args.mode !== 'undefined' && typeof state.mode !== 'undefined' && args.mode === state.mode) return callback(null, true);
+	return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('condition.comet_euro_mode', (callback, args) => {
-    const node = module.exports.nodes[args.device['token']];
-	
-	if (node &&
-	node.hasOwnProperty("state") &&
-	node.state.hasOwnProperty("eurotronic_mode") &&
-	args &&
-	args.hasOwnProperty("mode") &&
-	node.state.eurotronic_mode === args.mode)
-		return callback(null, true);
-	
-	return callback(null, false);
+	const node = module.exports.nodes[args.device.token];
+	if (!node) return callback('device_unavailable', false);
+	if (!args) return callback('arguments_error', false);
+
+	if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined' && node.state.eurotronic_mode === args.mode) return callback(null, true);
+	return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
-	const node = module.exports.nodes[args.device['token']];
-	
-	if (node &&
-	args.hasOwnProperty("temperature")) {
-		
+	const node = module.exports.nodes[args.device.token];
+	if (!node) return callback('device_unavailable', false);
+	if (!args) return callback('arguments_error', false);
+
+	if (args.hasOwnProperty('temperature') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT !== 'undefined') {
 		// Create 2 byte buffer of value, rounded to xx.5
 		let temp = new Buffer(2);
 		temp.writeUIntBE((args.temperature * 2).toFixed() / 2 * 10, 0, 2);
-		
 		// send the temperature + arguments to the module
-		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_SETPOINT']['THERMOSTAT_SETPOINT_SET'] ({
-			'Level': {
+		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT.THERMOSTAT_SETPOINT_SET ({
+			Level: {
 				'Setpoint Type': 'Energy Save Heating 2'
 			},
-			'Level2': {
-				'Precision': 1, // Number has one decimal
-				'Scale': 0, // No scale used
-				'Size': 2 // Value = 2 Bytes
+			Level2: {
+				Precision: 1, // Number has one decimal
+				Scale: 0, // No scale used
+				Size: 2, // Value = 2 Bytes
 			},
-			'Value': temp
+			Value: temp,
 		}, (err, result) => {
-			if (err)
-				return callback(null, false);
-			
-			if(result === "TRANSMIT_COMPLETE_OK")
+			if (err) return callback(err, false);
+			if (result === 'TRANSMIT_COMPLETE_OK') {
+				module.exports.realtime(node.device_data, 'target_temperature', args.temperature);
+				module.exports.realtime(node.device_data, 'eurotronic_mode', 'Energy Save Heat');
 				return callback(null, true);
-			
-			return callback(null, false);
+			}
+			return callback(result, false);
 		});
 	}
-	return callback(null, false);
+	return callback('unknown_error', false);
+});
+
+Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
+	const node = module.exports.nodes[args.device.token];
+	if (!node) return callback('device_unavailable', false);
+	if (!args) return callback('arguments_error', false);
+
+	if (node.state.hasOwnProperty('eurotronic_mode') && node.state.eurotronic_mode !== 'Manufacturer Specific') {
+		if (node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
+			// Change the mode to Manufacturer Specific
+			node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
+				Level: {
+					'No of Manufacturer Data fields': 0,
+					Mode: 'Manufacturer Specific',
+				},
+				'Manufacturer Data': new Buffer([0]),
+			}, (err, result) => {
+				if (err) return callback('mode_set_' + err, false);
+				if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', ' Manufacturer Specific');
+				return callback('mode_set_' + result, false);
+			});
+		} else {
+			return callback('mode_not_manual_failed_to_change', false);
+		}
+	}
+	if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
+		// Send the manual control value to the module
+		node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
+			Value: Math.round(args.value * 99),
+			'Dimming Duration': 'Factory default',
+		}, (err, result) => {
+			if (err) return callback('value_set_' + err, false);
+			if (result === 'TRANSMIT_COMPLETE_OK') return callback(null, true);
+			return callback('value_set_' + result, false);
+		});
+	}
+	return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
-	const node = module.exports.nodes[args.device['token']];
-	
-	if (node &&
-	args.hasOwnProperty("euro_mode")) {
-		
+	const node = module.exports.nodes[args.device.token];
+	if (!node) return callback('device_unavailable', false);
+	if (!args) return callback('arguments_error', false);
+
+	if (args.hasOwnProperty('euro_mode') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
 		// send the mode + arguments to the module
-		node.instance.CommandClass['COMMAND_CLASS_THERMOSTAT_MODE']['THERMOSTAT_MODE_SET'] ({
-			'Level': {
+		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
+			Level: {
 				'No of Manufacturer Data fields': 0,
-				'Mode': args.euro_mode
+				Mode: args.euro_mode,
 			},
-			'Manufacturer Data': new Buffer([0])
+			'Manufacturer Data': new Buffer([0]),
 		}, (err, result) => {
-			if (err)
-				return callback(null, false);
-			
-			if(result === "TRANSMIT_COMPLETE_OK")
+			if (err) return callback(err, false);
+			if (result === 'TRANSMIT_COMPLETE_OK') {
+				module.exports.realtime(node.device_data, 'target_temperature', value);
 				return callback(null, true);
-			
-			return callback(null, false);
+			}
+			return callback(result, false);
 		});
 	}
-	return callback(null, false);
+	return callback('unknown_error', false);
 });

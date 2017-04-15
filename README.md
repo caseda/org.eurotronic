@@ -13,22 +13,24 @@ This app adds support for Eurotronic Technology Z-Wave devices in Homey.
   - Set target temperature
   - Set economy target temperature (Flow Only)
   - Set/Read modes
++ Set manual valve position (Flow Only)
 
-### Notes:  
-+ Wake-Up is by default set to 1 hour (3600 seconds) on homey.  
-**The temperature and mode will only be SET when the device Wakes Up.**  
+### Notes:
+**The temperature and mode(s) will only be SET when the device Wakes Up.**
+Wake-Up is by default set to 1 hour (3600 seconds) on homey.  
 If you want to change the Wake-Up Interval,  
-you will need to use Steps of 240 seconds.  
-Example: 240, 480, 720, 960, etc  
-If you do not use a value based on these steps,  
-it will use the device's default of 604672 seconds (7 days)
+make sure you use Steps of 240 seconds.
 
 ### Supported Languages:
 * English
 * Dutch (Nederlands)
 
 ### Change Log:
-**v 1.0.0:**  
+**v1.0.1:**
+Add support for manual position control  
+Update Z-Wave driver to 1.1.8
+
+**v1.0.0:**
 Added support Stella Z-Wave  
 Comet Z-Wave:  
 Update mode support  
