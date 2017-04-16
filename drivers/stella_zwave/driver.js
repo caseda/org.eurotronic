@@ -124,6 +124,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_class: 'COMMAND_CLASS_SWITCH_MULTILEVEL',
 			command_get: 'SWITCH_MULTILEVEL_GET',
 			command_report: 'SWITCH_MULTILEVEL_REPORT',
+			command_report_parser: (report, node) => {
 				if (!report || !node) return null;
 				if (typeof report.Value === 'string') {
 					Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null, node.device_data);
