@@ -215,25 +215,25 @@ Homey.manager('flow').on('action.stella_eco_temperature', (callback, args) => {
 Homey.manager('flow').on('action.stella_manual_control', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
 	if (!node) return callback('device_unavailable', false);
-	if (!args) return callback('arguments_error', false);
+	else if (!args) return callback('arguments_error', false);
 
-	if (node.state.hasOwnProperty('eurotronic_mode') && node.state.eurotronic_mode !== 'Manufacturer Specific') {
-		if (node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
-			// Change the mode to Manufacturer Specific
-			node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
-				Level: {
-					'No of Manufacturer Data fields': 0,
-					Mode: 'Manufacturer Specific',
-				},
-				'Manufacturer Data': new Buffer([0]),
-			}, (err, result) => {
-				if (err) return callback('mode_set_' + err, false);
-				if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', ' Manufacturer Specific');
-				return callback('mode_set_' + result, false);
-			});
-		} else {
-			return callback('mode_not_manual_failed_to_change', false);
-		}
+	if ((typeof node.state.eurotronic_mode === 'undefined' ||
+		node.state.eurotronic_mode !== 'Manufacturer Specific') &&
+		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
+		// Change the mode to Manufacturer Specific
+		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
+			Level: {
+				'No of Manufacturer Data fields': 0,
+				Mode: 'Manufacturer Specific',
+			},
+			'Manufacturer Data': new Buffer([0]),
+		}, (err, result) => {
+			if (err) return callback('mode_set_' + err, false);
+			if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', ' Manufacturer Specific');
+			return callback('mode_set_' + result, false);
+		});
+	} else {
+		return callback('mode_not_manual_failed_to_change', false);
 	}
 	if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
 		// Send the manual control value to the module
