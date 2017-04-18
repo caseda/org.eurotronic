@@ -215,7 +215,7 @@ Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
 Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
 	if (!node) return callback('device_unavailable', false);
-	if (!args) return callback('arguments_error', false);
+	else if (!args) return callback('arguments_error', false);
 
 	if ((typeof node.state.eurotronic_mode === 'undefined' ||
 		node.state.eurotronic_mode !== 'Manufacturer Specific') &&
@@ -229,12 +229,11 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 			'Manufacturer Data': new Buffer([0]),
 		}, (err, result) => {
 			if (err) return callback('mode_set_' + err, false);
-			if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', ' Manufacturer Specific');
-			return callback('mode_set_' + result, false);
+			else if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', ' Manufacturer Specific');
+			else return callback('mode_set_' + result, false);
 		});
-	} else {
-		return callback('mode_not_manual_failed_to_change', false);
 	}
+
 	if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
 		// Send the manual control value to the module
 		node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
@@ -242,11 +241,10 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 			'Dimming Duration': 'Factory default',
 		}, (err, result) => {
 			if (err) return callback('value_set_' + err, false);
-			if (result === 'TRANSMIT_COMPLETE_OK') return callback(null, true);
-			return callback('value_set_' + result, false);
+			else if (result === 'TRANSMIT_COMPLETE_OK') return callback(null, true);
+			else return callback('value_set_' + result, false);
 		});
-	}
-	return callback('unknown_error', false);
+	} else return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
@@ -264,12 +262,11 @@ Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
 			'Manufacturer Data': new Buffer([0]),
 		}, (err, result) => {
 			if (err) return callback(err, false);
-			if (result === 'TRANSMIT_COMPLETE_OK') {
-				module.exports.realtime(node.device_data, 'target_temperature', value);
+			else if (result === 'TRANSMIT_COMPLETE_OK') {
+				module.exports.realtime(node.device_data, 'target_temperature', args.euro_mode);
 				return callback(null, true);
 			}
-			return callback(result, false);
+			else return callback(result, false);
 		});
-	}
-	return callback('unknown_error', false);
+	} else return callback('unknown_error', false);
 });
