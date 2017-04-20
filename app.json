@@ -85,7 +85,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -184,7 +184,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -259,7 +259,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -307,7 +307,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -361,7 +361,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -466,7 +466,7 @@
 								}
 							},
 							{
-								"id": "Manufacturer Specific",
+								"id": "MANUFACTURER SPECIFC",
 								"label": {
 									"en": "Manual",
 									"nl": "Handmatig"
@@ -565,7 +565,7 @@
 					}
 				},
 				{
-					"id": "Manufacturer Specific",
+					"id": "MANUFACTURER SPECIFC",
 					"title": {
 						"en": "Manual",
 						"nl": "Handmatig"
