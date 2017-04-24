@@ -214,15 +214,15 @@ Homey.manager('flow').on('action.stella_eco_temperature', (callback, args) => {
 
 Homey.manager('flow').on('action.stella_manual_control', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
+	let timeout = 0;
 	if (!node) return callback('device_unavailable', false);
 	else if (!args) return callback('arguments_error', false);
-	console.log('trigger found: changing manual level');
 
 	if ((typeof node.state.eurotronic_mode === 'undefined' ||
 		node.state.eurotronic_mode !== 'MANUFACTURER SPECIFC') &&
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
-		console.log('device was not in manual mode, changing...');
 		// Change the mode to Manufacturer Specific
+		timeout = 300;
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
 			Level: {
 				'No of Manufacturer Data fields': 0,
@@ -231,29 +231,24 @@ Homey.manager('flow').on('action.stella_manual_control', (callback, args) => {
 			'Manufacturer Data': new Buffer([0]),
 		}, (err, result) => {
 			if (err) return callback('mode_set_' + err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				console.log('change succes');
-				module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
-			}
+			else if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
 			else return callback('mode_set_' + result, false);
 		});
 	}
 
-	if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
-		console.log('trying to change value...');
-		// Send the manual control value to the module
-		node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
-			Value: Math.round(args.value * 99),
-			'Dimming Duration': 'Factory default',
-		}, (err, result) => {
-			if (err) return callback('value_set_' + err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				console.log('succesfully changed to: ' + Math.round(args.value * 100) + '%');
-				return callback(null, true);
-			}
-			else return callback('value_set_' + result, false);
-		});
-	} else return callback('unknown_error', false);
+	setTimeout(() => {
+		if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
+			// Send the manual control value to the module
+			node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
+				Value: Math.round(args.value * 99),
+				'Dimming Duration': 'Factory default',
+			}, (err, result) => {
+				if (err) return callback('value_set_' + err, false);
+				else if (result === 'TRANSMIT_COMPLETE_OK') return callback(null, true);
+				else return callback('value_set_' + result, false);
+			});
+		} else return callback('unknown_error', false);
+	}, timeout);
 });
 
 Homey.manager('flow').on('action.stella_set_euro_mode', (callback, args) => {
