@@ -215,7 +215,10 @@ Homey.manager('flow').on('action.stella_manual_control', (callback, args) => {
 			'Manufacturer Data': new Buffer([0]),
 		}, (err, result) => {
 			if (err) return callback('mode_set_' + err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
+			else if (result === 'TRANSMIT_COMPLETE_OK') {
+				node.state.eurotronic_mode = 'MANUFACTURER SPECIFC';
+				module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
+			}
 			else return callback('mode_set_' + result, false);
 		});
 	}
