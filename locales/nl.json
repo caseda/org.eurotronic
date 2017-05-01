@@ -1,8 +1,8 @@
 {
-  "mode": {
-    "Off": "Uit",
-    "Heat": "Comfortabel",
-    "Energy Save Heat": "Economische",
-    "MANUFACTURER SPECIFC": "Handmatig"
-  }
+	"mode": {
+		"Off": "Uit",
+		"Heat": "Comfortabel",
+		"Energy Save Heat": "Economische",
+		"MANUFACTURER SPECIFC": "Handmatig"
+	}
 }
