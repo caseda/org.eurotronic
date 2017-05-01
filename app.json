@@ -39,10 +39,22 @@
 					{
 						"name": "mode",
 						"title": {
-							"en": "Mode"
+							"en": "ID",
+							"nl": "ID"
 						},
 						"example": {
 							"en": "Heat"
+						}
+					},
+					{
+						"name": "mode_name",
+						"title": {
+							"en": "Name",
+							"nl": "Naam"
+						},
+						"example": {
+							"en": "Comfortable",
+							"nl": "Comfortabel"
 						}
 					}
 				]
@@ -137,11 +149,22 @@
 					{
 						"name": "mode",
 						"title": {
-							"en": "Mode",
-							"nl": "Modus"
+							"en": "ID",
+							"nl": "ID"
 						},
 						"example": {
 							"en": "Heat"
+						}
+					},
+					{
+						"name": "mode_name",
+						"title": {
+							"en": "Name",
+							"nl": "Naam"
+						},
+						"example": {
+							"en": "Comfortable",
+							"nl": "Comfortabel"
 						}
 					}
 				]

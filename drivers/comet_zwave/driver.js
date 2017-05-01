@@ -12,27 +12,11 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_class: 'COMMAND_CLASS_BATTERY',
 			command_get: 'BATTERY_GET',
 			command_report: 'BATTERY_REPORT',
-			command_report_parser: (report, node) => {
-				if (typeof report['Battery Level'] === 'string' && report['Battery Level'] === 'battery low warning') {
-					if (typeof node.state !== 'undefined' && (typeof node.state.alarm_battery === 'undefined' || node.state.alarm_battery !== true)) {
-						node.state.alarm_battery = true;
-						module.exports.realtime(node.device_data, 'alarm_battery', true);
-					}
-					return 1;
-				}
-				if (typeof report['Battery Level (Raw)'] !== 'undefined') {
-					if (typeof node.state !== 'undefined' && (typeof node.state.alarm_battery === 'undefined' || node.state.alarm_battery !== false)) {
-						node.state.alarm_battery = false;
-						module.exports.realtime(node.device_data, 'alarm_battery', false);
-					}
-					return report['Battery Level (Raw)'][0];
-				}
+			command_report_parser: report => {
+				if (typeof report['Battery Level'] === 'string' && report['Battery Level'] === 'battery low warning') return 1;
+				if (typeof report['Battery Level (Raw)'] !== 'undefined') return report['Battery Level (Raw)'][0];
 				return null;
 			},
-		},
-
-		alarm_battery: {
-			command_class: 'COMMAND_CLASS_BATTERY',
 		},
 
 		measure_temperature: {
@@ -155,7 +139,7 @@ module.exports.on('initNode', token => {
 	if (node && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.on('report', (command, report) => {
 			if (command.name === 'THERMOSTAT_MODE_REPORT' && report && report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
-				Homey.manager('flow').triggerDevice('comet_euro_mode_changed', { mode: report.Level.Mode }, null, node.device_data);
+				Homey.manager('flow').triggerDevice('comet_euro_mode_changed', { mode: report.Level.Mode, mode_name: __(mode[report.Level.Mode]) }, null, node.device_data);
 				Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
 			}
 		});
