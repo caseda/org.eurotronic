@@ -12,6 +12,30 @@
 	"category": [
 		"climate"
 	],
+	"tags": {
+		"en": [
+			"central heating",
+			"floor heating",
+			"heat",
+			"heating valve",
+			"thermostat valve",
+			"thermostatic valve",
+			"underfloor heating",
+			"valve"
+		],
+		"nl": [
+			"centrale verwarming",
+			"klimaat",
+			"kraan",
+			"temperatuur regeling",
+			"thermostaatkraan",
+			"thermostaat kraan",
+			"vloerverwarming",
+			"vloer verwarming",
+			"warmte",
+			"warmte regeling"
+		]
+	},
 	"images": {
 		"large": "/assets/images/large.png",
 		"small": "/assets/images/small.png"
