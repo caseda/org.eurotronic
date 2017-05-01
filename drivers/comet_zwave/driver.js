@@ -148,27 +148,27 @@ module.exports.on('initNode', token => {
 
 Homey.manager('flow').on('trigger.comet_euro_mode_changed_to', (callback, args, state) => {
 	if (!args) return callback('arguments_error', false);
-	if (!state) return callback('state_error', false);
+	else if (!state) return callback('state_error', false);
 
-	if(typeof args.mode !== 'undefined' && typeof state.mode !== 'undefined' && args.mode === state.mode) return callback(null, true);
-	return callback('unknown_error', false);
+	else if(typeof args.mode !== 'undefined' && typeof state.mode !== 'undefined' && args.mode === state.mode) return callback(null, true);
+	else return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('condition.comet_euro_mode', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
 	if (!node) return callback('device_unavailable', false);
-	if (!args) return callback('arguments_error', false);
+	else if (!args) return callback('arguments_error', false);
 
-	if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined' && node.state.eurotronic_mode === args.mode) return callback(null, true);
-	return callback('unknown_error', false);
+	else if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined' && node.state.eurotronic_mode === args.mode) return callback(null, true);
+	else return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
 	if (!node) return callback('device_unavailable', false);
-	if (!args) return callback('arguments_error', false);
+	else if (!args) return callback('arguments_error', false);
 
-	if (args.hasOwnProperty('temperature') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT !== 'undefined') {
+	else if (args.hasOwnProperty('temperature') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT !== 'undefined') {
 		// Create 2 byte buffer of value, rounded to xx.5
 		let temp = new Buffer(2);
 		temp.writeUIntBE((args.temperature * 2).toFixed() / 2 * 10, 0, 2);
@@ -185,15 +185,13 @@ Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
 			Value: temp,
 		}, (err, result) => {
 			if (err) return callback(err, false);
-			if (result === 'TRANSMIT_COMPLETE_OK') {
+			else if (result === 'TRANSMIT_COMPLETE_OK') {
 				module.exports.realtime(node.device_data, 'target_temperature', args.temperature);
 				module.exports.realtime(node.device_data, 'eurotronic_mode', 'Energy Save Heat');
 				return callback(null, true);
-			}
-			return callback(result, false);
+			} else return callback(result, false);
 		});
-	}
-	return callback('unknown_error', false);
+	} else return callback('unknown_error', false);
 });
 
 Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
@@ -202,7 +200,7 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 	if (!node) return callback('device_unavailable', false);
 	else if (!args) return callback('arguments_error', false);
 
-	if ((typeof node.state.eurotronic_mode === 'undefined' ||
+	else if ((typeof node.state.eurotronic_mode === 'undefined' ||
 		node.state.eurotronic_mode !== 'MANUFACTURER SPECIFC') &&
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
 		// Change the mode to Manufacturer Specific
@@ -218,8 +216,7 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 			else if (result === 'TRANSMIT_COMPLETE_OK') {
 				node.state.eurotronic_mode = 'MANUFACTURER SPECIFC';
 				module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
-			}
-			else return callback('mode_set_' + result, false);
+			} else return callback('mode_set_' + result, false);
 		});
 	}
 
@@ -241,9 +238,9 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
 	const node = module.exports.nodes[args.device.token];
 	if (!node) return callback('device_unavailable', false);
-	if (!args) return callback('arguments_error', false);
+	else if (!args) return callback('arguments_error', false);
 
-	if (args.hasOwnProperty('euro_mode') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
+	else if (args.hasOwnProperty('euro_mode') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
 		// send the mode + arguments to the module
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
 			Level: {
@@ -256,8 +253,7 @@ Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
 			else if (result === 'TRANSMIT_COMPLETE_OK') {
 				module.exports.realtime(node.device_data, 'target_temperature', args.euro_mode);
 				return callback(null, true);
-			}
-			else return callback(result, false);
+			} else return callback(result, false);
 		});
 	} else return callback('unknown_error', false);
 });
