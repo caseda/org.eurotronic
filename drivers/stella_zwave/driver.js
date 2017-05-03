@@ -99,7 +99,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_report: 'THERMOSTAT_MODE_REPORT',
 			command_report_parser: report => {
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
-					Homey.manager('flow').triggerDevice('stella_euro_mode_changed', { mode: report.Level.Mode, mode_name: __(mode[report.Level.Mode]) }, null, node.device_data);
+					Homey.manager('flow').triggerDevice('stella_euro_mode_changed', { mode: report.Level.Mode, mode_name: __("mode." + report.Level.Mode) }, null, node.device_data);
 					Homey.manager('flow').triggerDevice('stella_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
 					return report.Level.Mode;
 				}
