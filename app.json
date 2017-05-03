@@ -3,7 +3,7 @@
 	"name": {
 		"en": "Eurotronic Technology (Z-Wave)"
 	},
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"compatibility": ">=1.0.5",
 	"description": {
 		"en": "Eurotronic Z-Wave devices for Homey",
@@ -49,7 +49,7 @@
 			{
 				"id": "stella_euro_mode_changed",
 				"title": {
-					"en": "Thermostat mode changed",
+					"en": "Thermostatic mode has changed",
 					"nl": "Thermostaat modus is veranderd"
 				},
 				"args": [
@@ -86,7 +86,7 @@
 			{
 				"id": "stella_euro_mode_changed_to",
 				"title": {
-					"en": "Thermostat mode changed to",
+					"en": "Thermostatic mode has changed to",
 					"nl": "Thermostaat modus is veranderd naar"
 				},
 				"args": [
@@ -147,11 +147,12 @@
 				"tokens": [
 					{
 						"name": "value",
+						"type": "number",
 						"title": {
 							"en": "%"
 						},
 						"example": {
-							"en": "%"
+							"en": 0.5
 						}
 					}
 				]
@@ -159,7 +160,7 @@
 			{
 				"id": "comet_euro_mode_changed",
 				"title": {
-					"en": "Thermostat mode changed",
+					"en": "Thermostatic mode has changed",
 					"nl": "Thermostaat modus is veranderd"
 				},
 				"args": [
@@ -196,7 +197,7 @@
 			{
 				"id": "comet_euro_mode_changed_to",
 				"title": {
-					"en": "Thermostat mode changed to",
+					"en": "Thermostatic mode has changed to",
 					"nl": "Thermostaat modus is veranderd naar"
 				},
 				"args": [
@@ -257,11 +258,12 @@
 				"tokens": [
 					{
 						"name": "value",
+						"type": "number",
 						"title": {
 							"en": "%"
 						},
 						"example": {
-							"en": "%"
+							"en": 0.5
 						}
 					}
 				]
@@ -450,8 +452,8 @@
 					"nl": "Zet thermostaatkraan postitie"
 				},
 				"hint": {
-					"en": "This will set the thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
-					"nl": "Dit zet de postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+					"en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+					"nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
 				},
 				"args": [
 					{
@@ -555,8 +557,8 @@
 					"nl": "Zet thermostaatkraan postitie"
 				},
 				"hint": {
-					"en": "This will set the thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
-					"nl": "Dit zet de postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+					"en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+					"nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
 				},
 				"args": [
 					{
@@ -625,12 +627,12 @@
 		"eurotronic_manual_value": {
 			"type": "number",
 			"title": {
-				"en": "Manual value",
-				"nl": "Handmatige waarde"
+				"en": "Manual position",
+				"nl": "Handmatige Positie"
 			},
 			"desc": {
-				"en": "The manual value of the valve",
-				"nl": "De handmatig waarde van de kraan"
+				"en": "The manual position of the thermostat valve",
+				"nl": "De handmatige positie van de thermostaatkraan"
 			},
 			"getable": true,
 			"setable": false,

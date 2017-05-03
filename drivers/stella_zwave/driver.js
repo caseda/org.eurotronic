@@ -98,7 +98,11 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			}),
 			command_report: 'THERMOSTAT_MODE_REPORT',
 			command_report_parser: report => {
-				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) return report.Level.Mode;
+				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
+					Homey.manager('flow').triggerDevice('stella_euro_mode_changed', { mode: report.Level.Mode, mode_name: __(mode[report.Level.Mode]) }, null, node.device_data);
+					Homey.manager('flow').triggerDevice('stella_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
+					return report.Level.Mode;
+				}
 				return null;
 			},
 		},
@@ -131,19 +135,6 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			},
 		},
 	},
-});
-
-module.exports.on('initNode', token => {
-	const node = module.exports.nodes[token];
-
-	if (node && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
-		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.on('report', (command, report) => {
-			if (command.name === 'THERMOSTAT_MODE_REPORT' && report && report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
-				Homey.manager('flow').triggerDevice('stella_euro_mode_changed', { mode: report.Level.Mode, mode_name: __(mode[report.Level.Mode]) }, null, node.device_data);
-				Homey.manager('flow').triggerDevice('stella_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
-			}
-		});
-	}
 });
 
 Homey.manager('flow').on('trigger.stella_euro_mode_changed_to', (callback, args, state) => {
