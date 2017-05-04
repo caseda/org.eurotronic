@@ -3,8 +3,8 @@
 	"name": {
 		"en": "Eurotronic Technology (Z-Wave)"
 	},
-	"version": "1.1.1",
-	"compatibility": ">=1.0.5",
+	"version": "1.1.2",
+	"compatibility": ">=1.1.9",
 	"description": {
 		"en": "Eurotronic Z-Wave devices for Homey",
 		"nl": "Eurotronic Z-Wave apparaten voor Homey"

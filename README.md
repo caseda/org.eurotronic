@@ -25,8 +25,8 @@ If you want to change the Wake-Up Interval, make sure you use Steps of 240 secon
 * Dutch (Nederlands)
 
 ### Change Log:
-**v1.1.1:**
-Minor token fix
+**v1.1.1 & 1.1.2:**
+Minor fixes
 
 **v1.1.0:**
 Add support for manual position control (re-pair needed for full support)  
