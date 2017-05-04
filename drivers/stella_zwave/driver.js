@@ -13,6 +13,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_get: 'BATTERY_GET',
 			command_report: 'BATTERY_REPORT',
 			command_report_parser: report => {
+				if (!report) return null;
 				if (typeof report['Battery Level'] === 'string' && report['Battery Level'] === 'battery low warning') return 1;
 				if (typeof report['Battery Level (Raw)'] !== 'undefined') return report['Battery Level (Raw)'][0];
 				return null;
@@ -25,6 +26,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_get: 'SENSOR_MULTILEVEL_GET',
 			command_report: 'SENSOR_MULTILEVEL_REPORT',
 			command_report_parser: report => {
+				if (!report) return null;
 				if (report['Sensor Type'] === 'Temperature (version 1)') return report['Sensor Value (Parsed)'];
 				return null;
 			},
@@ -98,6 +100,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			}),
 			command_report: 'THERMOSTAT_MODE_REPORT',
 			command_report_parser: (report, node) => {
+				if (!report) return null;
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
 					if (node) {
 						Homey.manager('flow').triggerDevice('stella_euro_mode_changed', { mode: report.Level.Mode, mode_name: __("mode." + report.Level.Mode) }, null, node.device_data);
@@ -115,22 +118,22 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_get: 'SWITCH_MULTILEVEL_GET',
 			command_report: 'SWITCH_MULTILEVEL_REPORT',
 			command_report_parser: (report, node) => {
-				if (!report || !node) return null;
+				if (!report) return null;
 				if (typeof report.Value === 'string') {
-					Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null, node.device_data);
+					if (node) Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null, node.device_data);
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
 				}
 				if (typeof report.Value === 'number') {
-					Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: report.Value / 99 }, null, node.device_data);
+					if (node) Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: report.Value / 99 }, null, node.device_data);
 					return report.Value / 99;
 				}
 				if (typeof report['Value (Raw)'] !== 'undefined') {
 					if (report['Value (Raw)'] === 254) return null;
 					if (report['Value (Raw)'][0] === 255) {
-						Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: 1.0 }, null, node.device_data);
+						if (node) Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: 1.0 }, null, node.device_data);
 						return 1.0;
 					}
-					Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: report['Value (Raw)'][0] / 99 }, null, node.device_data);
+					if (node) Homey.manager('flow').triggerDevice('stella_euro_manual_position', { value: report['Value (Raw)'][0] / 99 }, null, node.device_data);
 					return report['Value (Raw)'][0] / 99;
 				}
 				return null;
