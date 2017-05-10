@@ -39,7 +39,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_get_parser: node => {
 				let mode = 'Heating 1';
 				if (node && typeof node.state.eurotronic_mode !== 'undefined' && node.state.eurotronic_mode === 'Energy Save Heat') {
-					mode = 'Energy Save Heating 2';
+					mode = 'Energy Save Heating';
 				}
 				return {
 					Level: {
@@ -172,7 +172,7 @@ Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
 		// send the temperature + arguments to the module
 		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT.THERMOSTAT_SETPOINT_SET ({
 			Level: {
-				'Setpoint Type': 'Energy Save Heating 2'
+				'Setpoint Type': 'Energy Save Heating'
 			},
 			Level2: {
 				Precision: 1, // Number has one decimal

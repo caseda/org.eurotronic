@@ -25,6 +25,9 @@ If you want to change the Wake-Up Interval, make sure you use Steps of 240 secon
 * Dutch (Nederlands)
 
 ### Change Log:
+**v1.1.3:**
+Fix set economic temperature bug.
+
 **v1.1.1 & 1.1.2:**
 Minor fixes
 
