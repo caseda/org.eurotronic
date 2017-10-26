@@ -281,13 +281,13 @@ let retry = false;
 function getStates(node) {
 	tries++;
 
-	if (!node.state.eurotronic_mode_spirit) {
+	if (typeof node.state.eurotronic_mode_spirit === 'undefined') {
 		if (typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE != 'undefined') {
 			node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_GET();
 		}
 	}
 
-	else if (!node.state.target_temperature) {
+	else if (typeof node.state.target_temperature === 'undefined') {
 		if (typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT != 'undefined') {
 			let mode = 'Heating 1';
 			if (node && typeof node.state.eurotronic_mode_spirit !== 'undefined' && node.state.eurotronic_mode_spirit === 'Energy Save Heat') {
@@ -301,13 +301,13 @@ function getStates(node) {
 		}
 	}
 
-	else if (!node.state.eurotronic_manual_value) {
+	else if (typeof node.state.eurotronic_manual_value === 'undefined') {
 		if (typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL != 'undefined') {
 			node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_GET();
 		}
 	}
 
-	else if (!node.state.measure_temperature) {
+	else if (typeof node.state.measure_temperature === 'undefined') {
 		if (typeof node.instance.CommandClass.COMMAND_CLASS_SENSOR_MULTILEVEL != 'undefined') {
 			node.instance.CommandClass.COMMAND_CLASS_SENSOR_MULTILEVEL.SENSOR_MULTILEVEL_GET({
 				'Sensor Type': 'Temperature (version 1)',
@@ -318,17 +318,17 @@ function getStates(node) {
 		}
 	}
 
-	else if (!node.state.eurotronic_protection) {
+	else if (typeof node.state.eurotronic_protection === 'undefined') {
 		if (typeof node.instance.CommandClass.COMMAND_CLASS_PROTECTION != 'undefined') {
 			node.instance.CommandClass.COMMAND_CLASS_PROTECTION.PROTECTION_GET();
 		}
 	}
 
-	if ((!node.state.eurotronic_mode_spirit ||
-		!node.state.target_temperature ||
-		!node.state.eurotronic_manual_value ||
-		!node.state.measure_temperature ||
-		!node.state.eurotronic_protection) &&
+	if ((typeof node.state.eurotronic_mode_spirit === 'undefined' ||
+		typeof node.state.target_temperature === 'undefined' ||
+		typeof node.state.eurotronic_manual_value === 'undefined' ||
+		typeof node.state.measure_temperature === 'undefined' ||
+		typeof node.state.eurotronic_protection === 'undefined') &&
 		tries <= 20) {
 			setTimeout( ()=> {
 				getStates(node);
