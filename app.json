@@ -1,818 +1,1629 @@
 {
-	"id": "org.eurotronic",
-	"name": {
-		"en": "Eurotronic Technology (Z-Wave)"
-	},
-	"version": "1.1.3",
-	"compatibility": ">=1.1.9",
-	"description": {
-		"en": "Eurotronic Z-Wave devices for Homey",
-		"nl": "Eurotronic Z-Wave apparaten voor Homey"
-	},
-	"category": [
-		"climate"
-	],
-	"tags": {
-		"en": [
-			"central heating",
-			"floor heating",
-			"heat",
-			"heating valve",
-			"thermostat valve",
-			"thermostatic valve",
-			"underfloor heating",
-			"valve"
-		],
-		"nl": [
-			"centrale verwarming",
-			"klimaat",
-			"kraan",
-			"temperatuur regeling",
-			"thermostaatkraan",
-			"thermostaat kraan",
-			"vloerverwarming",
-			"vloer verwarming",
-			"warmte",
-			"warmte regeling"
-		]
-	},
-	"images": {
-		"large": "/assets/images/large.png",
-		"small": "/assets/images/small.png"
-	},
-	"author": {
-		"name": "R. Mengers",
-		"email": "caseda08@hotmail.com"
-	},
-	"flow": {
-		"triggers": [
-			{
-				"id": "stella_euro_mode_changed",
-				"title": {
-					"en": "Thermostatic mode has changed",
-					"nl": "Thermostaat modus is veranderd"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					}
-				],
-				"tokens": [
-					{
-						"name": "mode",
-						"title": {
-							"en": "ID",
-							"nl": "ID"
-						},
-						"example": {
-							"en": "Heat"
-						}
-					},
-					{
-						"name": "mode_name",
-						"title": {
-							"en": "Name",
-							"nl": "Naam"
-						},
-						"example": {
-							"en": "Comfortable",
-							"nl": "Comfortabel"
-						}
-					}
-				]
-			},
-			{
-				"id": "stella_euro_mode_changed_to",
-				"title": {
-					"en": "Thermostatic mode has changed to",
-					"nl": "Thermostaat modus is veranderd naar"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "stella_euro_manual_position",
-				"title": {
-					"en": "Manual position changed",
-					"nl": "Handmatige positie veranderd"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					}
-				],
-				"tokens": [
-					{
-						"name": "value",
-						"type": "number",
-						"title": {
-							"en": "%"
-						},
-						"example": {
-							"en": 0.5
-						}
-					}
-				]
-			},
-			{
-				"id": "comet_euro_mode_changed",
-				"title": {
-					"en": "Thermostatic mode has changed",
-					"nl": "Thermostaat modus is veranderd"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					}
-				],
-				"tokens": [
-					{
-						"name": "mode",
-						"title": {
-							"en": "ID",
-							"nl": "ID"
-						},
-						"example": {
-							"en": "Heat"
-						}
-					},
-					{
-						"name": "mode_name",
-						"title": {
-							"en": "Name",
-							"nl": "Naam"
-						},
-						"example": {
-							"en": "Comfortable",
-							"nl": "Comfortabel"
-						}
-					}
-				]
-			},
-			{
-				"id": "comet_euro_mode_changed_to",
-				"title": {
-					"en": "Thermostatic mode has changed to",
-					"nl": "Thermostaat modus is veranderd naar"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					},
-					{
-						"name": "mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "comet_euro_manual_position",
-				"title": {
-					"en": "Manual position changed",
-					"nl": "Handmatige positie veranderd"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					}
-				],
-				"tokens": [
-					{
-						"name": "value",
-						"type": "number",
-						"title": {
-							"en": "%"
-						},
-						"example": {
-							"en": 0.5
-						}
-					}
-				]
-			}
-		],
-		"conditions": [
-			{
-				"id": "stella_euro_mode",
-				"title": {
-					"en": "Thermostat mode !{{is|isn't}}",
-					"nl": "Thermostaat modus !{{is|is niet}}"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "comet_euro_mode",
-				"title": {
-					"en": "Thermostat mode !{{is|isn't}}",
-					"nl": "Thermostaat modus !{{is|is niet}}"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					},
-					{
-						"name": "mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			}
-		],
-		"actions": [
-			{
-				"id": "stella_set_euro_mode",
-				"title": {
-					"en": "Set thermostat mode",
-					"nl": "Zet thermostaat modus"
-				},
-				"hint": {
-					"en": "Set the mode of the thermostatic",
-					"nl": "Zet de modus van de thermostaat kraan"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "euro_mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "stella_eco_temperature",
-				"title": {
-					"en": "Set eco temperature",
-					"nl": "Zet eco temperatuur"
-				},
-				"hint": {
-					"en": "This sets the Economy temperature and thermostat mode",
-					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "temperature",
-						"type": "range",
-						"min": 4,
-						"max": 30,
-						"step": 0.5
-					}
-				]
-			},
-			{
-				"id": "stella_manual_control",
-				"title": {
-					"en": "Set thermostatic position",
-					"nl": "Zet thermostaatkraan postitie"
-				},
-				"hint": {
-					"en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
-					"nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=stella_zwave"
-					},
-					{
-						"name": "value",
-						"type": "range",
-						"min": 0,
-						"max": 1,
-						"step": 0.01,
-						"labelMultiplier": 100,
-						"label": "%",
-						"labelDecimals": 2
-					}
-				]
-			},
-			{
-				"id": "comet_set_euro_mode",
-				"title": {
-					"en": "Set thermostat mode",
-					"nl": "Zet thermostaat modus"
-				},
-				"hint": {
-					"en": "Set the mode of the thermostatic",
-					"nl": "Zet de modus van de thermostaat kraan"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					},
-					{
-						"name": "euro_mode",
-						"type": "dropdown",
-						"values": [
-							{
-								"id": "Off",
-								"label": {
-									"en": "Off (6°C)",
-									"nl": "Uit (6°C)"
-								}
-							},
-							{
-								"id": "Heat",
-								"label": {
-									"en": "Comfortable",
-									"nl": "Comfortabel"
-								}
-							},
-							{
-								"id": "Energy Save Heat",
-								"label": {
-									"en": "Economic",
-									"nl": "Economische"
-								}
-							},
-							{
-								"id": "MANUFACTURER SPECIFC",
-								"label": {
-									"en": "Manual",
-									"nl": "Handmatig"
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "comet_eco_temperature",
-				"title": {
-					"en": "Set eco temperature",
-					"nl": "Zet eco temperatuur"
-				},
-				"hint": {
-					"en": "This sets the Economy temperature and thermostat mode",
-					"nl": "Dit zet de Economie temperatuur en thermostaat mode"
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					},
-					{
-						"name": "temperature",
-						"type": "range",
-						"min": 4,
-						"max": 30,
-						"step": 0.5
-					}
-				]
-			},
-			{
-				"id": "comet_manual_control",
-				"title": {
-					"en": "Set thermostatic position",
-					"nl": "Zet thermostaatkraan postitie"
-				},
-				"hint": {
-					"en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
-					"nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
-				},
-				"args": [
-					{
-						"name": "device",
-						"type": "device",
-						"filter": "driver_id=comet_zwave"
-					},
-					{
-						"name": "value",
-						"type": "range",
-						"min": 0,
-						"max": 1,
-						"step": 0.01,
-						"label": "%",
-						"labelMultiplier": 100,
-						"labelDecimals": 2
-					}
-				]
-			}
-		]
-	},
-	"capabilities": {
-		"eurotronic_mode": {
-			"type": "enum",
-			"title": {
-				"en": "Thermostat mode",
-				"nl": "Thermostaat modus"
-			},
-			"desc": {
-				"en": "Mode of the thermostat",
-				"nl": "Modus van de thermostaat"
-			},
-			"values": [
-				{
-					"id": "Off",
-					"title": {
-						"en": "Off (6°C)",
-						"nl": "Uit (6°C)"
-					}
-				},
-				{
-					"id": "Heat",
-					"title": {
-						"en": "Comfortable",
-						"nl": "Comfortabel"
-					}
-				},
-				{
-					"id": "Energy Save Heat",
-					"title": {
-						"en": "Economic",
-						"nl": "Economische"
-					}
-				},
-				{
-					"id": "MANUFACTURER SPECIFC",
-					"title": {
-						"en": "Manual",
-						"nl": "Handmatig"
-					}
-				}
-			],
-			"getable": true,
-			"setable": true
-		},
-		"eurotronic_manual_value": {
-			"type": "number",
-			"title": {
-				"en": "Manual position",
-				"nl": "Handmatige Positie"
-			},
-			"desc": {
-				"en": "The manual position of the thermostat valve",
-				"nl": "De handmatige positie van de thermostaatkraan"
-			},
-			"getable": true,
-			"setable": false,
-			"chartType": "line",
-			"units": {
-				"en": "%"
-			},
-			"min": 0,
-			"max": 1,
-			"step": 0.01
-		}
-	},
-	"drivers": [
-		{
-			"id": "stella_zwave",
-			"name": {
-				"en": "Stella Z-Wave Thermostat",
-				"nl": "Stella Z-Wave Thermostaat"
-			},
-			"zwave": {
-				"manufacturerId": 328,
-				"productTypeId": 1,
-				"productId": [
-					1
-				],
-				"learnmode": {
-					"image": "/drivers/stella_zwave/assets/learnmode.svg",
-					"instruction": {
-						"en": "Use the tool to Press the small button for 2.5 seconds.",
-						"nl": "Gebruik de tool om 2,5 seconden op de kleine knop te drukken."
-					}
-				},
-				"associationGroups": [
-					1
-				],
-				"associationGroupsOptions": {
-					"1": {
-						"hint": {
-							"en": "This is the controller group, it is not recommended to change this ID",
-							"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
-						}
-					}
-				},
-				"wakeUpInterval": 3600
-			},
-			"class": "thermostat",
-			"capabilities": [
-				"measure_battery",
-				"eurotronic_mode",
-				"measure_temperature",
-				"target_temperature",
-				"eurotronic_manual_value"
-			],
-			"capabilitiesOptions": {
-				"target_temperature": {
-					"min": 4,
-					"max": 28,
-					"step": 0.5
-				}
-			},
-			"mobile": {
-				"components": [
-					{
-						"id": "icon",
-						"capabilities": [ ]
-					},
-					{
-						"id": "battery",
-						"capabilities": [
-							"measure_battery"
-						]
-					},
-					{
-						"id": "picker",
-						"capabilities": [
-							"eurotronic_mode"
-						]
-					},
-					{
-						"id": "sensor",
-						"capabilities": [
-							"measure_temperature"
-						]
-					},
-					{
-						"id": "thermostat",
-						"capabilities": [
-							"target_temperature"
-						]
-					}
-				]
-			},
-			"images": {
-				"large": "/drivers/stella_zwave/assets/images/large.png",
-				"small": "/drivers/stella_zwave/assets/images/small.png"
-			}
-		},
-		{
-			"id": "comet_zwave",
-			"name": {
-				"en": "Comet Z-Wave Thermostat",
-				"nl": "Comet Z-Wave Thermostaat"
-			},
-			"zwave": {
-				"manufacturerId": 328,
-				"productTypeId": 2,
-				"productId": [
-					1
-				],
-				"learnmode": {
-					"image": "/drivers/comet_zwave/assets/learnmode.svg",
-					"instruction": {
-						"en": "Press the button inside the battery compartment for 5 seconds.",
-						"nl": "Druk 5 seconden op de knop binnen in het batterijcompartiment."
-					}
-				},
-				"associationGroups": [
-					1
-				],
-				"associationGroupsOptions": {
-					"1": {
-						"hint": {
-							"en": "This is the controller group, it is not recommended to change this ID",
-							"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
-						}
-					}
-				},
-				"wakeUpInterval": 3600
-			},
-			"class": "thermostat",
-			"capabilities": [
-				"measure_battery",
-				"eurotronic_mode",
-				"measure_temperature",
-				"target_temperature",
-				"eurotronic_manual_value"
-			],
-			"capabilitiesOptions": {
-				"target_temperature": {
-					"min": 4,
-					"max": 28,
-					"step": 0.5
-				}
-			},
-			"mobile": {
-				"components": [
-					{
-						"id": "icon",
-						"capabilities": [ ]
-					},
-					{
-						"id": "battery",
-						"capabilities": [
-							"measure_battery"
-						]
-					},
-					{
-						"id": "picker",
-						"capabilities": [
-							"eurotronic_mode"
-						]
-					},
-					{
-						"id": "sensor",
-						"capabilities": [
-							"measure_temperature"
-						]
-					},
-					{
-						"id": "thermostat",
-						"capabilities": [
-							"target_temperature"
-						]
-					}
-				]
-			},
-			"images": {
-				"large": "/drivers/comet_zwave/assets/images/large.png",
-				"small": "/drivers/comet_zwave/assets/images/small.png"
-			}
-		}
-	]
+  "id": "org.eurotronic",
+  "name": {
+    "en": "Eurotronic Technology (Z-Wave)"
+  },
+  "version": "1.2.0",
+  "compatibility": ">=1.1.9",
+  "description": {
+    "en": "Eurotronic Z-Wave devices for Homey",
+    "nl": "Eurotronic Z-Wave apparaten voor Homey"
+  },
+  "category": [
+    "climate"
+  ],
+  "tags": {
+    "en": [
+      "central heating",
+      "floor heating",
+      "heat",
+      "heating valve",
+      "thermostat valve",
+      "thermostatic valve",
+      "underfloor heating",
+      "valve",
+      "flirs",
+      "flir",
+      "frequently listening receiving slave",
+      "frequently listening"
+    ],
+    "nl": [
+      "centrale verwarming",
+      "klimaat",
+      "kraan",
+      "temperatuur regeling",
+      "thermostaatkraan",
+      "thermostaat kraan",
+      "vloerverwarming",
+      "vloer verwarming",
+      "warmte",
+      "warmte regeling",
+      "flirs",
+      "flir"
+    ]
+  },
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png"
+  },
+  "author": {
+    "name": "R. Mengers",
+    "email": "caseda08@hotmail.com"
+  },
+  "capabilities": {
+    "eurotronic_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Thermostat mode",
+        "nl": "Thermostaat modus"
+      },
+      "desc": {
+        "en": "Mode of the thermostat",
+        "nl": "Modus van de thermostaat"
+      },
+      "values": [
+        {
+          "id": "Off",
+          "title": {
+            "en": "Off (6°C)",
+            "nl": "Uit (6°C)"
+          }
+        },
+        {
+          "id": "Heat",
+          "title": {
+            "en": "Comfortable",
+            "nl": "Comfortabel"
+          }
+        },
+        {
+          "id": "Energy Save Heat",
+          "title": {
+            "en": "Economic",
+            "nl": "Economische"
+          }
+        },
+        {
+          "id": "MANUFACTURER SPECIFC",
+          "title": {
+            "en": "Manual",
+            "nl": "Handmatig"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true
+    },
+    "eurotronic_mode_spirit": {
+      "type": "enum",
+      "title": {
+        "en": "Thermostat mode",
+        "nl": "Thermostaat modus"
+      },
+      "desc": {
+        "en": "Mode of the thermostat",
+        "nl": "Modus van de thermostaat"
+      },
+      "values": [
+        {
+          "id": "Off",
+          "title": {
+            "en": "Off (6°C)",
+            "nl": "Uit (6°C)"
+          }
+        },
+        {
+          "id": "Heat",
+          "title": {
+            "en": "Comfortable",
+            "nl": "Comfortabel"
+          }
+        },
+        {
+          "id": "Energy Save Heat",
+          "title": {
+            "en": "Economic",
+            "nl": "Economische"
+          }
+        },
+        {
+          "id": "FULL POWER",
+          "title": {
+            "en": "Boost",
+            "nl": "Boost"
+          }
+        },
+        {
+          "id": "MANUFACTURER SPECIFC",
+          "title": {
+            "en": "Manual",
+            "nl": "Handmatig"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true
+    },
+    "eurotronic_manual_value": {
+      "type": "number",
+      "title": {
+        "en": "Manual position",
+        "nl": "Handmatige Positie"
+      },
+      "desc": {
+        "en": "The manual position of the thermostat valve",
+        "nl": "De handmatige positie van de thermostaatkraan"
+      },
+      "getable": true,
+      "setable": false,
+      "chartType": "line",
+      "min": 0,
+      "max": 1,
+      "decimals": 2
+    },
+    "eurotronic_protection": {
+      "type": "enum",
+      "title": {
+        "en": "(Child) Protection",
+        "nl": "(Kinder) Beveiliging"
+      },
+      "desc": {
+        "en": "The (child) protection state of the thermostatic.",
+        "nl": "De (kinder) beveiliging status van de thermostaatkraan."
+      },
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "unprotected",
+          "title": {
+            "en": "Unprotected",
+            "nl": "Onbeveiligt"
+          }
+        },
+        {
+          "id": "unlockable",
+          "title": {
+            "en": "Unlockable protected",
+            "nl": "Ontgrendelbaar beveiligt"
+          }
+        },
+        {
+          "id": "protected",
+          "title": {
+            "en": "Protected",
+            "nl": "Beveiligt"
+          }
+        }
+      ]
+    }
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "comet_euro_mode_changed",
+        "title": {
+          "en": "Thermostatic mode has changed",
+          "nl": "Thermostaat modus is veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "ID",
+              "nl": "ID"
+            },
+            "example": {
+              "en": "Heat"
+            }
+          },
+          {
+            "name": "mode_name",
+            "title": {
+              "en": "Name",
+              "nl": "Naam"
+            },
+            "example": {
+              "en": "Comfortable",
+              "nl": "Comfortabel"
+            }
+          }
+        ]
+      },
+      {
+        "id": "comet_euro_mode_changed_to",
+        "title": {
+          "en": "Thermostatic mode has changed to",
+          "nl": "Thermostaat modus is veranderd naar"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "comet_euro_manual_position",
+        "title": {
+          "en": "Manual position changed",
+          "nl": "Handmatige positie veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "position",
+              "nl": "positie"
+            },
+            "example": {
+              "en": 0.5
+            }
+          }
+        ]
+      },
+      {
+        "id": "spirit_euro_mode_changed",
+        "title": {
+          "en": "Thermostatic mode has changed",
+          "nl": "Thermostaat modus is veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "ID",
+              "nl": "ID"
+            },
+            "example": {
+              "en": "Heat"
+            }
+          },
+          {
+            "name": "mode_name",
+            "title": {
+              "en": "Name",
+              "nl": "Naam"
+            },
+            "example": {
+              "en": "Comfortable",
+              "nl": "Comfortabel"
+            }
+          }
+        ]
+      },
+      {
+        "id": "spirit_euro_mode_changed_to",
+        "title": {
+          "en": "Thermostatic mode has changed to",
+          "nl": "Thermostaat modus is veranderd naar"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spirit_euro_manual_position",
+        "title": {
+          "en": "Manual position changed",
+          "nl": "Handmatige positie veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "position",
+              "nl": "positie"
+            },
+            "example": {
+              "en": 0.5
+            }
+          }
+        ]
+      },
+      {
+        "id": "spirit_protection_changed",
+        "title": {
+          "en": "Protection state changed",
+          "nl": "Beveiliging status veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "state",
+            "title": {
+              "en": "state"
+            },
+            "example": {
+              "en": "unprotected",
+              "nl": "onbeveiligt"
+            }
+          }
+        ]
+      },
+      {
+        "id": "stella_euro_mode_changed",
+        "title": {
+          "en": "Thermostatic mode has changed",
+          "nl": "Thermostaat modus is veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "ID",
+              "nl": "ID"
+            },
+            "example": {
+              "en": "Heat"
+            }
+          },
+          {
+            "name": "mode_name",
+            "title": {
+              "en": "Name",
+              "nl": "Naam"
+            },
+            "example": {
+              "en": "Comfortable",
+              "nl": "Comfortabel"
+            }
+          }
+        ]
+      },
+      {
+        "id": "stella_euro_mode_changed_to",
+        "title": {
+          "en": "Thermostatic mode has changed to",
+          "nl": "Thermostaat modus is veranderd naar"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stella_euro_manual_position",
+        "title": {
+          "en": "Manual position changed",
+          "nl": "Handmatige positie veranderd"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "position",
+              "nl": "positie"
+            },
+            "example": {
+              "en": 0.5
+            }
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "comet_euro_mode",
+        "title": {
+          "en": "Thermostat mode !{{is|isn't}}",
+          "nl": "Thermostaat modus !{{is|is niet}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spirit_euro_mode",
+        "title": {
+          "en": "Thermostat mode !{{is|isn't}}",
+          "nl": "Thermostaat modus !{{is|is niet}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "FULL POWER",
+                "label": {
+                  "en": "Boost",
+                  "nl": "Boost"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spirit_protection",
+        "title": {
+          "en": "Protection state !{{is|isn't}}",
+          "nl": "beveiliging status !{{is|is niet}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "unprotected",
+                "label": {
+                  "en": "Unprotected",
+                  "nl": "Onbeveiligt"
+                }
+              },
+              {
+                "id": "unlockable",
+                "label": {
+                  "en": "Unlockable protected",
+                  "nl": "Ontgrendelbaar beveiligt"
+                }
+              },
+              {
+                "id": "protected",
+                "label": {
+                  "en": "Protected",
+                  "nl": "Beveiligt"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stella_euro_mode",
+        "title": {
+          "en": "Thermostat mode !{{is|isn't}}",
+          "nl": "Thermostaat modus !{{is|is niet}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "comet_set_euro_mode",
+        "title": {
+          "en": "Set thermostat mode",
+          "nl": "Zet thermostaat modus"
+        },
+        "hint": {
+          "en": "Set the mode of the thermostatic",
+          "nl": "Zet de modus van de thermostaat kraan"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          },
+          {
+            "name": "euro_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "comet_eco_temperature",
+        "title": {
+          "en": "Set eco temperature",
+          "nl": "Zet eco temperatuur"
+        },
+        "hint": {
+          "en": "This sets the Economy temperature and thermostat mode",
+          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          },
+          {
+            "name": "temperature",
+            "type": "range",
+            "min": 6,
+            "max": 28,
+            "step": 0.5,
+            "label": "&deg;C"
+          }
+        ]
+      },
+      {
+        "id": "comet_manual_control",
+        "title": {
+          "en": "Set thermostatic position",
+          "nl": "Zet thermostaatkraan postitie"
+        },
+        "hint": {
+          "en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+          "nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=comet_zwave"
+          },
+          {
+            "name": "value",
+            "type": "range",
+            "min": 0,
+            "max": 1,
+            "step": 0.01,
+            "label": "%",
+            "labelMultiplier": 100,
+            "labelDecimals": 2
+          }
+        ]
+      },
+      {
+        "id": "spirit_set_euro_mode",
+        "title": {
+          "en": "Set thermostat mode",
+          "nl": "Zet thermostaat modus"
+        },
+        "hint": {
+          "en": "Set the mode of the thermostatic",
+          "nl": "Zet de modus van de thermostaat kraan"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "euro_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "FULL POWER",
+                "label": {
+                  "en": "Boost",
+                  "nl": "Boost"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spirit_eco_temperature",
+        "title": {
+          "en": "Set eco temperature",
+          "nl": "Zet eco temperatuur"
+        },
+        "hint": {
+          "en": "This sets the Economy temperature and thermostat mode",
+          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "temperature",
+            "type": "range",
+            "min": 8,
+            "max": 28,
+            "step": 0.5,
+            "label": "&deg;C"
+          }
+        ]
+      },
+      {
+        "id": "spirit_manual_control",
+        "title": {
+          "en": "Set thermostatic position",
+          "nl": "Zet thermostaatkraan postitie"
+        },
+        "hint": {
+          "en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+          "nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "value",
+            "type": "range",
+            "min": 0,
+            "max": 1,
+            "step": 0.01,
+            "label": "%",
+            "labelMultiplier": 100
+          }
+        ]
+      },
+      {
+        "id": "spirit_protection",
+        "title": {
+          "en": "Set protection state",
+          "nl": "Zet beveiliging status"
+        },
+        "hint": {
+          "en": "With this card you can set the (child) protection state.\nUnlocking is by holding the plus and minus buttons.",
+          "nl": "Met deze kaart kan je de (kinder) beveiligings status instellen.\nOntgrendelen is door de plus en min knoppen in te houden."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "unprotected",
+                "label": {
+                  "en": "Unprotected",
+                  "nl": "Onbeveiligt"
+                }
+              },
+              {
+                "id": "unlockable",
+                "label": {
+                  "en": "Unlockable protected",
+                  "nl": "Ontgrendelbaar beveiligt"
+                }
+              },
+              {
+                "id": "protected",
+                "label": {
+                  "en": "Protected",
+                  "nl": "Beveiligt"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spirit_external_temperature",
+        "title": {
+          "en": "Send room temperature",
+          "nl": "Zend kamer temperatuur"
+        },
+        "hint": {
+          "en": "Send an (external) temperature to the spirit so it knows the room temperature.\nThe setting \"(External) Room Temperature\" does need to be active to use this.",
+          "nl": "Stuur een (externe) temperatuur naar de spirit zodat het de kamer temperatuur weet.\nDe setting \"(Externe) Kamer Temperatuur\" moet wel geactiveerd zijn."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=spirit_zwave"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "min": 0,
+            "max": 40,
+            "step": 0.01,
+            "placeholder": {
+              "en": "In degree celcius",
+              "nl": "In graden celcius"
+            }
+          }
+        ]
+      },
+      {
+        "id": "stella_set_euro_mode",
+        "title": {
+          "en": "Set thermostat mode",
+          "nl": "Zet thermostaat modus"
+        },
+        "hint": {
+          "en": "Set the mode of the thermostatic",
+          "nl": "Zet de modus van de thermostaat kraan"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          },
+          {
+            "name": "euro_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "Off",
+                "label": {
+                  "en": "Off (6°C)",
+                  "nl": "Uit (6°C)"
+                }
+              },
+              {
+                "id": "Heat",
+                "label": {
+                  "en": "Comfortable",
+                  "nl": "Comfortabel"
+                }
+              },
+              {
+                "id": "Energy Save Heat",
+                "label": {
+                  "en": "Economic",
+                  "nl": "Economische"
+                }
+              },
+              {
+                "id": "MANUFACTURER SPECIFC",
+                "label": {
+                  "en": "Manual",
+                  "nl": "Handmatig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stella_eco_temperature",
+        "title": {
+          "en": "Set eco temperature",
+          "nl": "Zet eco temperatuur"
+        },
+        "hint": {
+          "en": "This sets the Economy temperature and thermostat mode",
+          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          },
+          {
+            "name": "temperature",
+            "type": "range",
+            "min": 6,
+            "max": 28,
+            "step": 0.5,
+            "label": "&deg;C"
+          }
+        ]
+      },
+      {
+        "id": "stella_manual_control",
+        "title": {
+          "en": "Set thermostatic position",
+          "nl": "Zet thermostaatkraan postitie"
+        },
+        "hint": {
+          "en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+          "nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=stella_zwave"
+          },
+          {
+            "name": "value",
+            "type": "range",
+            "min": 0,
+            "max": 1,
+            "step": 0.01,
+            "labelMultiplier": 100,
+            "label": "%",
+            "labelDecimals": 2
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "id": "comet_zwave",
+      "name": {
+        "en": "Comet Z-Wave Thermostat",
+        "nl": "Comet Z-Wave Thermostaat"
+      },
+      "zwave": {
+        "manufacturerId": 328,
+        "productTypeId": 2,
+        "productId": [
+          1
+        ],
+        "learnmode": {
+          "image": "/drivers/comet_zwave/assets/learnmode.svg",
+          "instruction": {
+            "en": "Press the button inside the battery compartment for 5 seconds.",
+            "nl": "Druk 5 seconden op de knop binnen in het batterijcompartiment."
+          }
+        },
+        "associationGroups": [
+          1
+        ],
+        "associationGroupsOptions": {
+          "1": {
+            "hint": {
+              "en": "This is the controller group, it is not recommended to change this ID",
+              "nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+            }
+          }
+        },
+        "wakeUpInterval": 3600
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "measure_battery",
+        "eurotronic_mode",
+        "measure_temperature",
+        "target_temperature",
+        "eurotronic_manual_value"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 6,
+          "max": 28,
+          "step": 0.5
+        }
+      },
+      "mobile": {
+        "components": [
+          {
+            "id": "icon",
+            "capabilities": []
+          },
+          {
+            "id": "battery",
+            "capabilities": [
+              "measure_battery"
+            ]
+          },
+          {
+            "id": "picker",
+            "capabilities": [
+              "eurotronic_mode"
+            ]
+          },
+          {
+            "id": "sensor",
+            "capabilities": [
+              "measure_temperature"
+            ]
+          },
+          {
+            "id": "thermostat",
+            "capabilities": [
+              "target_temperature"
+            ]
+          }
+        ]
+      },
+      "images": {
+        "large": "/drivers/comet_zwave/assets/images/large.png",
+        "small": "/drivers/comet_zwave/assets/images/small.png"
+      }
+    },
+    {
+      "id": "spirit_zwave",
+      "name": {
+        "en": "Spirit Z-Wave Thermostat",
+        "nl": "Spirit Z-Wave Thermostaat"
+      },
+      "zwave": {
+        "manufacturerId": 328,
+        "productTypeId": 3,
+        "productId": [
+          1
+        ],
+        "learnmode": {
+          "image": "/drivers/spirit_zwave/assets/learnmode.svg",
+          "instruction": {
+            "en": "Press the boost button once.",
+            "nl": "Druk 1 keer op de boost knop."
+          }
+        },
+        "unlearnmode": {
+          "image": "/drivers/spirit_zwave/assets/unlearnmode.svg",
+          "instruction": {
+            "en": "Hold the boost button for atleast 5 seconds.",
+            "nl": "Houdt de boost knop voor tenminste 5 seconden ingedrukt."
+          }
+        },
+        "associationGroups": [
+          1
+        ],
+        "associationGroupsOptions": {
+          "1": {
+            "hint": {
+              "en": "This is the controller group, it is not recommended to change this ID",
+              "nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+            }
+          }
+        }
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "measure_battery",
+        "eurotronic_mode_spirit",
+        "measure_temperature",
+        "target_temperature",
+        "eurotronic_manual_value",
+        "eurotronic_protection"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 8,
+          "max": 28,
+          "step": 0.5
+        }
+      },
+      "mobile": {
+        "components": [
+          {
+            "id": "icon",
+            "capabilities": []
+          },
+          {
+            "id": "battery",
+            "capabilities": [
+              "measure_battery"
+            ]
+          },
+          {
+            "id": "picker",
+            "capabilities": [
+              "eurotronic_mode_spirit"
+            ]
+          },
+          {
+            "id": "sensor",
+            "capabilities": [
+              "measure_temperature"
+            ]
+          },
+          {
+            "id": "thermostat",
+            "capabilities": [
+              "target_temperature"
+            ]
+          }
+        ]
+      },
+      "images": {
+        "large": "/drivers/spirit_zwave/assets/images/large.png",
+        "small": "/drivers/spirit_zwave/assets/images/small.png"
+      },
+      "settings": [
+        {
+          "id": "flip_screen",
+          "type": "checkbox",
+          "label": {
+            "en": "Flip Screen",
+            "nl": "Draai Scherm Om"
+          },
+          "hint": {
+            "en": "This will flip the screen horizontally.",
+            "nl": "Dit zal het scherm horizontaal omdraaien."
+          },
+          "value": false
+        },
+        {
+          "id": "screen_timeout",
+          "type": "number",
+          "label": {
+            "en": "Screen Timeout",
+            "nl": "Scherm Timeout"
+          },
+          "hint": {
+            "en": "After how many seconds should the screen turn off.\n Range: 0 (always on), 5 - 30 seconds.",
+            "nl": "Na hoeveel seconden moet het scherm uit gaan.\n Bereik: 0 (altijd aan), 5 - 30 seconden."
+          },
+          "value": 0,
+          "attr": {
+            "min": 0,
+            "max": 30
+          }
+        },
+        {
+          "id": "backlight",
+          "type": "checkbox",
+          "label": {
+            "en": "Backlight",
+            "nl": "Achtergrond Verlichting"
+          },
+          "value": true
+        },
+        {
+          "id": "battery_report",
+          "type": "dropdown",
+          "label": {
+            "en": "Battery Level Report",
+            "nl": "Batterij Niveau Verzending"
+          },
+          "value": "1",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Only when battery is low",
+                "nl": "Alleen wanneer batterij laag is"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Once a day",
+                "nl": "Eens per dag"
+              }
+            }
+          ]
+        },
+        {
+          "id": "temperature_threshold",
+          "type": "number",
+          "label": {
+            "en": "Measured Temperature Threshold",
+            "nl": "Gemeten Temperatuur Drempel"
+          },
+          "hint": {
+            "en": "How much must the measured temperature change before being send.\n Range: 0 (disabled), 0.1 - 5.0 °C.",
+            "nl": "Hoeveel moet de gemeten temperatuur veranderen voor het word verzonden.\n Bereik: 0 (gedeactiveerd), 0,1 - 5,0 °C."
+          },
+          "value": 0.5,
+          "attr": {
+            "min": 0,
+            "max": 5,
+            "step": 0.1
+          }
+        },
+        {
+          "id": "valve_threshold",
+          "type": "number",
+          "label": {
+            "en": "Manual Valve Threshold",
+            "nl": "Handmatige Kraan Drempel"
+          },
+          "hint": {
+            "en": "How much must the valve position change in manual mode before being send.\n Range: 0 (disabled), 1% - 100%.",
+            "nl": "Hoeveel moet de kraan positie veranderen in handmatige modus voor het word verzonden.\n Bereik: 0 (gedeactiveerd), 1% - 100%."
+          },
+          "value": 0,
+          "attr": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "id": "window_open_detection",
+          "type": "dropdown",
+          "label": {
+            "en": "Window Open Sensitivity",
+            "nl": "Raam Open Gevoeligheid"
+          },
+          "value": "2",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Disabled",
+                "nl": "Gedeactiveerd"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Low",
+                "nl": "Laag"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Middle",
+                "nl": "Middel"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "High",
+                "nl": "Hoog"
+              }
+            }
+          ]
+        },
+        {
+          "id": "measure_temperature_calibration",
+          "type": "number",
+          "label": {
+            "en": "Measure Temperature Calibration",
+            "nl": "Gemeten Temperatuur Calibratie"
+          },
+          "hint": {
+            "en": "Range: -5.0 - +5.0 °C",
+            "nl": "Bereik: -5.0 - +5.0 °C"
+          },
+          "value": 0,
+          "attr": {
+            "min": -5,
+            "max": 5,
+            "step": 0.1
+          }
+        },
+        {
+          "id": "external_temperature",
+          "type": "checkbox",
+          "label": {
+            "en": "(External) Room Temperature",
+            "nl": "(Externe) Kamer Temperatuur"
+          },
+          "hint": {
+            "en": "Enabled, the spirit will use the temperature send by flow or a direct associated external temperature measuring device for the room temperature.\n\nThis wil disable the temperature measuring on the spirit itself",
+            "nl": "Geactiveerd, de spirit zal een in flow verzonden temperatuur of direct geasocieerd externe tempertuur metend apparaat gebruiken voor de kamer temperatuur.\n\nDit zal de temperatuur meting van de spirit zelf deactiveren"
+          },
+          "value": false
+        },
+        {
+          "id": "child_protection",
+          "type": "dropdown",
+          "label": {
+            "en": "Protection State",
+            "nl": "Beveiliging Status"
+          },
+          "hint": {
+            "en": "You can unlock by holding the plus and minus buttons.",
+            "nl": "Je kan ontgrendelen door de plus en min knoppen in te houden."
+          },
+          "value": "0",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Unprotected",
+                "nl": "Onbeveiligt"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Unlockable Protected",
+                "nl": "Ontgrendelbaar Beveiligt"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Protected",
+                "nl": "Beveiligt"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stella_zwave",
+      "name": {
+        "en": "Stella Z-Wave Thermostat",
+        "nl": "Stella Z-Wave Thermostaat"
+      },
+      "zwave": {
+        "manufacturerId": 328,
+        "productTypeId": 1,
+        "productId": [
+          1
+        ],
+        "learnmode": {
+          "image": "/drivers/stella_zwave/assets/learnmode.svg",
+          "instruction": {
+            "en": "Use the tool to Press the small button for 2.5 seconds.",
+            "nl": "Gebruik de tool om 2,5 seconden op de kleine knop te drukken."
+          }
+        },
+        "associationGroups": [
+          1
+        ],
+        "associationGroupsOptions": {
+          "1": {
+            "hint": {
+              "en": "This is the controller group, it is not recommended to change this ID",
+              "nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+            }
+          }
+        },
+        "wakeUpInterval": 3600
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "measure_battery",
+        "eurotronic_mode",
+        "measure_temperature",
+        "target_temperature",
+        "eurotronic_manual_value"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 6,
+          "max": 28,
+          "step": 0.5
+        }
+      },
+      "mobile": {
+        "components": [
+          {
+            "id": "icon",
+            "capabilities": []
+          },
+          {
+            "id": "battery",
+            "capabilities": [
+              "measure_battery"
+            ]
+          },
+          {
+            "id": "picker",
+            "capabilities": [
+              "eurotronic_mode"
+            ]
+          },
+          {
+            "id": "sensor",
+            "capabilities": [
+              "measure_temperature"
+            ]
+          },
+          {
+            "id": "thermostat",
+            "capabilities": [
+              "target_temperature"
+            ]
+          }
+        ]
+      },
+      "images": {
+        "large": "/drivers/stella_zwave/assets/images/large.png",
+        "small": "/drivers/stella_zwave/assets/images/small.png"
+      }
+    }
+  ]
 }

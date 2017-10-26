@@ -1,0 +1,298 @@
+{
+  "id": "spirit_zwave",
+  "name": {
+    "en": "Spirit Z-Wave Thermostat",
+    "nl": "Spirit Z-Wave Thermostaat"
+  },
+  "zwave": {
+    "manufacturerId": 328,
+    "productTypeId": 3,
+    "productId": [
+      1
+    ],
+    "learnmode": {
+      "image": "/drivers/spirit_zwave/assets/learnmode.svg",
+      "instruction": {
+        "en": "Press the boost button once.",
+        "nl": "Druk 1 keer op de boost knop."
+      }
+    },
+    "unlearnmode": {
+      "image": "/drivers/spirit_zwave/assets/unlearnmode.svg",
+      "instruction": {
+        "en": "Hold the boost button for atleast 5 seconds.",
+        "nl": "Houdt de boost knop voor tenminste 5 seconden ingedrukt."
+      }
+    },
+    "associationGroups": [
+      1
+    ],
+    "associationGroupsOptions": {
+      "1": {
+        "hint": {
+          "en": "This is the controller group, it is not recommended to change this ID",
+          "nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+        }
+      }
+    }
+  },
+  "class": "thermostat",
+  "capabilities": [
+    "measure_battery",
+    "eurotronic_mode_spirit",
+    "measure_temperature",
+    "target_temperature",
+    "eurotronic_manual_value",
+    "eurotronic_protection"
+  ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "min": 8,
+      "max": 28,
+      "step": 0.5
+    }
+  },
+  "mobile": {
+    "components": [
+      {
+        "id": "icon",
+        "capabilities": [ ]
+      },
+      {
+        "id": "battery",
+        "capabilities": [
+          "measure_battery"
+        ]
+      },
+      {
+        "id": "picker",
+        "capabilities": [
+          "eurotronic_mode_spirit"
+        ]
+      },
+      {
+        "id": "sensor",
+        "capabilities": [
+          "measure_temperature"
+        ]
+      },
+      {
+        "id": "thermostat",
+        "capabilities": [
+          "target_temperature"
+        ]
+      }
+    ]
+  },
+  "images": {
+    "large": "/drivers/spirit_zwave/assets/images/large.png",
+    "small": "/drivers/spirit_zwave/assets/images/small.png"
+  },
+  "settings": [
+    {
+    	"id": "flip_screen",
+    	"type": "checkbox",
+    	"label": {
+    		"en": "Flip Screen",
+        "nl": "Draai Scherm Om"
+    	},
+    	"hint": {
+    		"en": "This will flip the screen horizontally.",
+        "nl": "Dit zal het scherm horizontaal omdraaien."
+    	},
+    	"value": false
+    },
+    {
+    	"id": "screen_timeout",
+    	"type": "number",
+    	"label": {
+    		"en": "Screen Timeout",
+        "nl": "Scherm Timeout"
+    	},
+    	"hint": {
+    		"en": "After how many seconds should the screen turn off.\n Range: 0 (always on), 5 - 30 seconds.",
+        "nl": "Na hoeveel seconden moet het scherm uit gaan.\n Bereik: 0 (altijd aan), 5 - 30 seconden."
+    	},
+    	"value": 0,
+    	"attr": {
+    		"min": 0,
+    		"max": 30
+    	}
+    },
+    {
+    	"id": "backlight",
+    	"type": "checkbox",
+    	"label": {
+    		"en": "Backlight",
+        "nl": "Achtergrond Verlichting"
+    	},
+    	"value": true
+    },
+    {
+    	"id": "battery_report",
+    	"type": "dropdown",
+    	"label": {
+    		"en": "Battery Level Report",
+        "nl": "Batterij Niveau Verzending"
+    	},
+    	"value": "1",
+    	"values": [
+    		{
+    			"id": "0",
+    			"label": {
+    				"en": "Only when battery is low",
+            "nl": "Alleen wanneer batterij laag is"
+    			}
+    		},
+    		{
+    			"id": "1",
+    			"label": {
+    				"en": "Once a day",
+            "nl": "Eens per dag"
+    			}
+    		}
+    	]
+    },
+    {
+    	"id": "temperature_threshold",
+    	"type": "number",
+    	"label": {
+    		"en": "Measured Temperature Threshold",
+        "nl": "Gemeten Temperatuur Drempel"
+    	},
+    	"hint": {
+    		"en": "How much must the measured temperature change before being send.\n Range: 0 (disabled), 0.1 - 5.0 °C.",
+        "nl": "Hoeveel moet de gemeten temperatuur veranderen voor het word verzonden.\n Bereik: 0 (gedeactiveerd), 0,1 - 5,0 °C."
+    	},
+    	"value": 0.5,
+    	"attr": {
+    		"min": 0,
+    		"max": 5,
+        "step": 0.1
+    	}
+    },
+    {
+    	"id": "valve_threshold",
+    	"type": "number",
+    	"label": {
+    		"en": "Manual Valve Threshold",
+        "nl": "Handmatige Kraan Drempel"
+    	},
+    	"hint": {
+    		"en": "How much must the valve position change in manual mode before being send.\n Range: 0 (disabled), 1% - 100%.",
+        "nl": "Hoeveel moet de kraan positie veranderen in handmatige modus voor het word verzonden.\n Bereik: 0 (gedeactiveerd), 1% - 100%."
+    	},
+    	"value": 0,
+    	"attr": {
+    		"min": 0,
+    		"max": 100
+    	}
+    },
+    {
+    	"id": "window_open_detection",
+    	"type": "dropdown",
+    	"label": {
+    		"en": "Window Open Sensitivity",
+        "nl": "Raam Open Gevoeligheid"
+    	},
+    	"value": "2",
+    	"values": [
+    		{
+    			"id": "0",
+    			"label": {
+    				"en": "Disabled",
+            "nl": "Gedeactiveerd"
+    			}
+    		},
+    		{
+    			"id": "1",
+    			"label": {
+    				"en": "Low",
+            "nl": "Laag"
+    			}
+    		},
+    		{
+    			"id": "2",
+    			"label": {
+    				"en": "Middle",
+            "nl": "Middel"
+    			}
+    		},
+    		{
+    			"id": "3",
+    			"label": {
+    				"en": "High",
+            "nl": "Hoog"
+    			}
+    		}
+    	]
+    },
+    {
+    	"id": "measure_temperature_calibration",
+    	"type": "number",
+    	"label": {
+    		"en": "Measure Temperature Calibration",
+        "nl": "Gemeten Temperatuur Calibratie"
+    	},
+    	"hint": {
+    		"en": "Range: -5.0 - +5.0 °C",
+        "nl": "Bereik: -5.0 - +5.0 °C"
+    	},
+    	"value": 0,
+    	"attr": {
+    		"min": -5.0,
+    		"max": 5.0,
+        "step": 0.1
+    	}
+    },
+    {
+    	"id": "external_temperature",
+    	"type": "checkbox",
+    	"label": {
+    		"en": "(External) Room Temperature",
+        "nl": "(Externe) Kamer Temperatuur"
+    	},
+      "hint": {
+        "en": "Enabled, the spirit will use the temperature send by flow or a direct associated external temperature measuring device for the room temperature.\n\nThis wil disable the temperature measuring on the spirit itself",
+        "nl": "Geactiveerd, de spirit zal een in flow verzonden temperatuur of direct geasocieerd externe tempertuur metend apparaat gebruiken voor de kamer temperatuur.\n\nDit zal de temperatuur meting van de spirit zelf deactiveren"
+      },
+    	"value": false
+    },
+    {
+    	"id": "child_protection",
+    	"type": "dropdown",
+    	"label": {
+    		"en": "Protection State",
+        "nl": "Beveiliging Status"
+    	},
+      "hint": {
+        "en": "You can unlock by holding the plus and minus buttons.",
+        "nl": "Je kan ontgrendelen door de plus en min knoppen in te houden."
+      },
+    	"value": "0",
+    	"values": [
+    		{
+    			"id": "0",
+    			"label": {
+    				"en": "Unprotected",
+            "nl": "Onbeveiligt"
+    			}
+    		},
+    		{
+    			"id": "1",
+    			"label": {
+    				"en": "Unlockable Protected",
+            "nl": "Ontgrendelbaar Beveiligt"
+    			}
+    		},
+    		{
+    			"id": "2",
+    			"label": {
+    				"en": "Protected",
+            "nl": "Beveiligt"
+    			}
+    		}
+    	]
+    }
+  ]
+}

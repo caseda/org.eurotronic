@@ -1,0 +1,114 @@
+[
+  {
+    "id": "comet_euro_mode_changed",
+    "title": {
+      "en": "Thermostatic mode has changed",
+      "nl": "Thermostaat modus is veranderd"
+    },
+    "args": [
+      {
+        "name": "device",
+        "type": "device",
+        "filter": "driver_id=comet_zwave"
+      }
+    ],
+    "tokens": [
+      {
+        "name": "mode",
+        "title": {
+          "en": "ID",
+          "nl": "ID"
+        },
+        "example": {
+          "en": "Heat"
+        }
+      },
+      {
+        "name": "mode_name",
+        "title": {
+          "en": "Name",
+          "nl": "Naam"
+        },
+        "example": {
+          "en": "Comfortable",
+          "nl": "Comfortabel"
+        }
+      }
+    ]
+  },
+  {
+    "id": "comet_euro_mode_changed_to",
+    "title": {
+      "en": "Thermostatic mode has changed to",
+      "nl": "Thermostaat modus is veranderd naar"
+    },
+    "args": [
+      {
+        "name": "device",
+        "type": "device",
+        "filter": "driver_id=comet_zwave"
+      },
+      {
+        "name": "mode",
+        "type": "dropdown",
+        "values": [
+          {
+            "id": "Off",
+            "label": {
+              "en": "Off (6°C)",
+              "nl": "Uit (6°C)"
+            }
+          },
+          {
+            "id": "Heat",
+            "label": {
+              "en": "Comfortable",
+              "nl": "Comfortabel"
+            }
+          },
+          {
+            "id": "Energy Save Heat",
+            "label": {
+              "en": "Economic",
+              "nl": "Economische"
+            }
+          },
+          {
+            "id": "MANUFACTURER SPECIFC",
+            "label": {
+              "en": "Manual",
+              "nl": "Handmatig"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "comet_euro_manual_position",
+    "title": {
+      "en": "Manual position changed",
+      "nl": "Handmatige positie veranderd"
+    },
+    "args": [
+      {
+        "name": "device",
+        "type": "device",
+        "filter": "driver_id=comet_zwave"
+      }
+    ],
+    "tokens": [
+      {
+        "name": "value",
+        "type": "number",
+        "title": {
+          "en": "position",
+          "nl": "positie"
+        },
+        "example": {
+          "en": 0.5
+        }
+      }
+    ]
+  }
+]

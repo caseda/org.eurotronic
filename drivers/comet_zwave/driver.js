@@ -103,7 +103,7 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 			command_report_parser: (report, node) => {
 				if (!report) return null;
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
-					if (node) {
+					if (node && typeof node.state.eurotronic_mode != 'undefined') {
 						Homey.manager('flow').triggerDevice('comet_euro_mode_changed', { mode: report.Level.Mode, mode_name: __("mode." + report.Level.Mode) }, null, node.device_data);
 						Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
 					}
@@ -125,8 +125,8 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
 				}
 				if (typeof report.Value === 'number') {
-					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report.Value / 99 }, null, node.device_data);
-					return report.Value / 99;
+					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report.Value / 100 }, null, node.device_data);
+					return report.Value / 100;
 				}
 				if (typeof report['Value (Raw)'] !== 'undefined') {
 					if (report['Value (Raw)'] === 254) return null;
@@ -134,8 +134,8 @@ module.exports = new ZwaveDriver(path.basename(__dirname), {
 						if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: 1.0 }, null, node.device_data);
 						return 1.0;
 					}
-					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report['Value (Raw)'][0] / 99 }, null, node.device_data);
-					return report['Value (Raw)'][0] / 99;
+					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report['Value (Raw)'][0] / 100 }, null, node.device_data);
+					return report['Value (Raw)'][0] / 100;
 				}
 				return null;
 			},
@@ -156,7 +156,11 @@ Homey.manager('flow').on('condition.comet_euro_mode', (callback, args) => {
 	if (!node) return callback('device_unavailable', false);
 	else if (!args) return callback('arguments_error', false);
 
-	else if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined' && node.state.eurotronic_mode === args.mode) return callback(null, true);
+	else if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined') {
+		if (node.state.eurotronic_mode === args.mode) return callback(null, true);
+		else return callback(null, false);
+	}
+
 	else return callback('unknown_error', false);
 });
 
@@ -211,7 +215,6 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 		}, (err, result) => {
 			if (err) return callback('mode_set_' + err, false);
 			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				node.state.eurotronic_mode = 'MANUFACTURER SPECIFC';
 				module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
 			} else return callback('mode_set_' + result, false);
 		});
@@ -221,11 +224,14 @@ Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
 		if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
 			// Send the manual control value to the module
 			node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
-				Value: Math.round(args.value * 99),
+				Value: Math.round(args.value * 100),
 				'Dimming Duration': 'Factory default',
 			}, (err, result) => {
 				if (err) return callback('value_set_' + err, false);
-				else if (result === 'TRANSMIT_COMPLETE_OK') return callback(null, true);
+				else if (result === 'TRANSMIT_COMPLETE_OK') {
+					module.exports.realtime(node.device_data, 'eurotronic_manual_value', args.value);
+					return callback(null, true);
+				}
 				else return callback('value_set_' + result, false);
 			});
 		} else return callback('unknown_error', false);

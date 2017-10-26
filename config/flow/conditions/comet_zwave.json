@@ -1,0 +1,50 @@
+[
+  {
+    "id": "comet_euro_mode",
+    "title": {
+      "en": "Thermostat mode !{{is|isn't}}",
+      "nl": "Thermostaat modus !{{is|is niet}}"
+    },
+    "args": [
+      {
+        "name": "device",
+        "type": "device",
+        "filter": "driver_id=comet_zwave"
+      },
+      {
+        "name": "mode",
+        "type": "dropdown",
+        "values": [
+          {
+            "id": "Off",
+            "label": {
+              "en": "Off (6°C)",
+              "nl": "Uit (6°C)"
+            }
+          },
+          {
+            "id": "Heat",
+            "label": {
+              "en": "Comfortable",
+              "nl": "Comfortabel"
+            }
+          },
+          {
+            "id": "Energy Save Heat",
+            "label": {
+              "en": "Economic",
+              "nl": "Economische"
+            }
+          },
+          {
+            "id": "MANUFACTURER SPECIFC",
+            "label": {
+              "en": "Manual",
+              "nl": "Handmatig"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
