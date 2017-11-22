@@ -118,8 +118,8 @@
       "nl": "Zet beveiliging status"
     },
     "hint": {
-      "en": "With this card you can set the (child) protection state.\nUnlocking is by holding the plus and minus buttons.",
-      "nl": "Met deze kaart kan je de (kinder) beveiligings status instellen.\nOntgrendelen is door de plus en min knoppen in te houden."
+      "en": "With this card you can set the (child) protection state.\nYou can unlock by holding the plus and minus buttons.",
+      "nl": "Met deze kaart kan je de (kinder) beveiligings status instellen.\nJe kan ontgrendelen door de plus en min knoppen in te houden."
     },
     "args": [
       {
@@ -135,21 +135,21 @@
             "id": "unprotected",
             "label": {
               "en": "Unprotected",
-              "nl": "Onbeveiligt"
+              "nl": "Onbeveiligd"
             }
           },
           {
             "id": "unlockable",
             "label": {
               "en": "Unlockable protected",
-              "nl": "Ontgrendelbaar beveiligt"
+              "nl": "Ontgrendelbaar beveiligd"
             }
           },
           {
             "id": "protected",
             "label": {
               "en": "Protected",
-              "nl": "Beveiligt"
+              "nl": "Beveiligd"
             }
           }
         ]
