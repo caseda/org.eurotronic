@@ -35,6 +35,11 @@ If you want to change the Wake-Up Interval, make sure you use Steps of 240 secon
 * Dutch (Nederlands)
 
 ### Change Log:
+**v1.2.1:**
+Spirit: Fix default temperature reporting, normal default is too high.  
+Spirit: Fix a few text errors.  
+Spirit: Added id's for (future) firmware updates of the spirit.
+
 **v1.2.0:**
 Add support Spirit Z-Wave  
 Fixed temperature ranges of Stella and Comet thermostatic  
