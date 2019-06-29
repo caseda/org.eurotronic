@@ -3,6 +3,16 @@
 		"Off": "Off",
 		"Heat": "Comfortable",
 		"Energy Save Heat": "Economic",
+		"FULL POWER": "Boost",
 		"MANUFACTURER SPECIFC": "Manual"
+	},
+	"error": {
+		"valve": {
+			"0": "Error cleared",
+			"1": "Motor movement not possible",
+			"2": "Not mounted on a valve",
+			"3": "Valve closing point could not be detected",
+			"4": "Piston positioning failed"
+		}
 	}
 }

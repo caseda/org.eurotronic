@@ -3,8 +3,10 @@
   "name": {
     "en": "Eurotronic Technology (Z-Wave)"
   },
-  "version": "1.2.1",
-  "compatibility": ">=1.1.9",
+  "sdk": 2,
+  "version": "2.0.6",
+  "compatibility": ">=1.5.0",
+  "brandColor": "#CB2223",
   "description": {
     "en": "Eurotronic Z-Wave devices for Homey",
     "nl": "Eurotronic Z-Wave apparaten voor Homey"
@@ -50,154 +52,15 @@
     "name": "R. Mengers",
     "email": "caseda08@hotmail.com"
   },
-  "capabilities": {
-    "eurotronic_mode": {
-      "type": "enum",
-      "title": {
-        "en": "Thermostat mode",
-        "nl": "Thermostaat modus"
-      },
-      "desc": {
-        "en": "Mode of the thermostat",
-        "nl": "Modus van de thermostaat"
-      },
-      "values": [
-        {
-          "id": "Off",
-          "title": {
-            "en": "Off (6°C)",
-            "nl": "Uit (6°C)"
-          }
-        },
-        {
-          "id": "Heat",
-          "title": {
-            "en": "Comfortable",
-            "nl": "Comfortabel"
-          }
-        },
-        {
-          "id": "Energy Save Heat",
-          "title": {
-            "en": "Economic",
-            "nl": "Economische"
-          }
-        },
-        {
-          "id": "MANUFACTURER SPECIFC",
-          "title": {
-            "en": "Manual",
-            "nl": "Handmatig"
-          }
-        }
-      ],
-      "getable": true,
-      "setable": true
-    },
-    "eurotronic_mode_spirit": {
-      "type": "enum",
-      "title": {
-        "en": "Thermostat mode",
-        "nl": "Thermostaat modus"
-      },
-      "desc": {
-        "en": "Mode of the thermostat",
-        "nl": "Modus van de thermostaat"
-      },
-      "values": [
-        {
-          "id": "Off",
-          "title": {
-            "en": "Off (6°C)",
-            "nl": "Uit (6°C)"
-          }
-        },
-        {
-          "id": "Heat",
-          "title": {
-            "en": "Comfortable",
-            "nl": "Comfortabel"
-          }
-        },
-        {
-          "id": "Energy Save Heat",
-          "title": {
-            "en": "Economic",
-            "nl": "Economische"
-          }
-        },
-        {
-          "id": "FULL POWER",
-          "title": {
-            "en": "Boost",
-            "nl": "Boost"
-          }
-        },
-        {
-          "id": "MANUFACTURER SPECIFC",
-          "title": {
-            "en": "Manual",
-            "nl": "Handmatig"
-          }
-        }
-      ],
-      "getable": true,
-      "setable": true
-    },
-    "eurotronic_manual_value": {
-      "type": "number",
-      "title": {
-        "en": "Manual position",
-        "nl": "Handmatige Positie"
-      },
-      "desc": {
-        "en": "The manual position of the thermostat valve",
-        "nl": "De handmatige positie van de thermostaatkraan"
-      },
-      "getable": true,
-      "setable": false,
-      "chartType": "line",
-      "min": 0,
-      "max": 1,
-      "decimals": 2
-    },
-    "eurotronic_protection": {
-      "type": "enum",
-      "title": {
-        "en": "(Child) Protection",
-        "nl": "(Kinder) Beveiliging"
-      },
-      "desc": {
-        "en": "The (child) protection state of the thermostatic.",
-        "nl": "De (kinder) beveiliging status van de thermostaatkraan."
-      },
-      "getable": true,
-      "setable": true,
-      "values": [
-        {
-          "id": "unprotected",
-          "title": {
-            "en": "Unprotected",
-            "nl": "Onbeveiligt"
-          }
-        },
-        {
-          "id": "unlockable",
-          "title": {
-            "en": "Unlockable protected",
-            "nl": "Ontgrendelbaar beveiligt"
-          }
-        },
-        {
-          "id": "protected",
-          "title": {
-            "en": "Protected",
-            "nl": "Beveiligt"
-          }
-        }
-      ]
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "caseda",
+        "currency": "EUR"
+      }
     }
   },
+  "homeyCommunityTopicId": 5771,
   "flow": {
     "triggers": [
       {
@@ -206,13 +69,6 @@
           "en": "Thermostatic mode has changed",
           "nl": "Thermostaat modus is veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=comet_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "mode",
@@ -235,6 +91,13 @@
               "nl": "Comfortabel"
             }
           }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=comet_zwave"
+          }
         ]
       },
       {
@@ -245,8 +108,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=comet_zwave"
           },
           {
@@ -291,13 +154,6 @@
           "en": "Manual position changed",
           "nl": "Handmatige positie veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=comet_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "value",
@@ -306,9 +162,14 @@
               "en": "position",
               "nl": "positie"
             },
-            "example": {
-              "en": 0.5
-            }
+            "example": 0.5
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=comet_zwave"
           }
         ]
       },
@@ -318,13 +179,6 @@
           "en": "Thermostatic mode has changed",
           "nl": "Thermostaat modus is veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=spirit_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "mode",
@@ -347,6 +201,13 @@
               "nl": "Comfortabel"
             }
           }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
         ]
       },
       {
@@ -357,8 +218,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -387,6 +248,13 @@
                 }
               },
               {
+                "id": "FULL POWER",
+                "label": {
+                  "en": "Boost",
+                  "nl": "Boost"
+                }
+              },
+              {
                 "id": "MANUFACTURER SPECIFC",
                 "label": {
                   "en": "Manual",
@@ -403,13 +271,6 @@
           "en": "Manual position changed",
           "nl": "Handmatige positie veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=spirit_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "value",
@@ -418,9 +279,14 @@
               "en": "position",
               "nl": "positie"
             },
-            "example": {
-              "en": 0.5
-            }
+            "example": 0.5
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=spirit_zwave"
           }
         ]
       },
@@ -430,13 +296,6 @@
           "en": "Protection state changed",
           "nl": "Beveiliging status veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=spirit_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "state",
@@ -448,6 +307,40 @@
               "nl": "onbeveiligt"
             }
           }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
+        ]
+      },
+      {
+        "id": "spirit_error_occurred",
+        "title": {
+          "en": "A valve error occurred",
+          "nl": "Een fout opgetreden in de kraan"
+        },
+        "tokens": [
+          {
+            "name": "error",
+            "title": {
+              "en": "error",
+              "nl": "fout"
+            },
+            "example": {
+              "en": "Motor movement not possible",
+              "nl": "Motor beweging niet mogelijk"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=spirit_zwave"
+          }
         ]
       },
       {
@@ -456,13 +349,6 @@
           "en": "Thermostatic mode has changed",
           "nl": "Thermostaat modus is veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=stella_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "mode",
@@ -485,6 +371,13 @@
               "nl": "Comfortabel"
             }
           }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=stella_zwave"
+          }
         ]
       },
       {
@@ -495,8 +388,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=stella_zwave"
           },
           {
@@ -541,13 +434,6 @@
           "en": "Manual position changed",
           "nl": "Handmatige positie veranderd"
         },
-        "args": [
-          {
-            "name": "device",
-            "type": "device",
-            "filter": "driver_id=stella_zwave"
-          }
-        ],
         "tokens": [
           {
             "name": "value",
@@ -556,9 +442,14 @@
               "en": "position",
               "nl": "positie"
             },
-            "example": {
-              "en": 0.5
-            }
+            "example": 0.5
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=stella_zwave"
           }
         ]
       }
@@ -572,8 +463,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=comet_zwave"
           },
           {
@@ -620,8 +511,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -675,8 +566,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -716,8 +607,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=stella_zwave"
           },
           {
@@ -770,8 +661,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=comet_zwave"
           },
           {
@@ -813,17 +704,17 @@
       {
         "id": "comet_eco_temperature",
         "title": {
-          "en": "Set eco temperature",
-          "nl": "Zet eco temperatuur"
+          "en": "Set economy temperature",
+          "nl": "Zet economie temperatuur"
         },
         "hint": {
-          "en": "This sets the Economy temperature and thermostat mode",
-          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+          "en": "This sets the temperature for the Economy mode",
+          "nl": "Dit zet de temperatuur voor de Economie modus"
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=comet_zwave"
           },
           {
@@ -832,7 +723,7 @@
             "min": 6,
             "max": 28,
             "step": 0.5,
-            "label": "&deg;C"
+            "label": "°C"
           }
         ]
       },
@@ -848,8 +739,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=comet_zwave"
           },
           {
@@ -876,8 +767,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -926,17 +817,17 @@
       {
         "id": "spirit_eco_temperature",
         "title": {
-          "en": "Set eco temperature",
-          "nl": "Zet eco temperatuur"
+          "en": "Set economy temperature",
+          "nl": "Zet economie temperatuur"
         },
         "hint": {
-          "en": "This sets the Economy temperature and thermostat mode",
-          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+          "en": "This sets the temperature for the Economy mode",
+          "nl": "Dit zet de temperatuur voor de Economie modus"
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -945,7 +836,7 @@
             "min": 8,
             "max": 28,
             "step": 0.5,
-            "label": "&deg;C"
+            "label": "°C"
           }
         ]
       },
@@ -961,8 +852,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -988,8 +879,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -1033,8 +924,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=spirit_zwave"
           },
           {
@@ -1062,8 +953,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=stella_zwave"
           },
           {
@@ -1105,17 +996,17 @@
       {
         "id": "stella_eco_temperature",
         "title": {
-          "en": "Set eco temperature",
-          "nl": "Zet eco temperatuur"
+          "en": "Set economy temperature",
+          "nl": "Zet economie temperatuur"
         },
         "hint": {
-          "en": "This sets the Economy temperature and thermostat mode",
-          "nl": "Dit zet de Economie temperatuur en thermostaat mode"
+          "en": "This sets the temperature for the Economy mode",
+          "nl": "Dit zet de temperatuur voor de Economie modus"
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=stella_zwave"
           },
           {
@@ -1124,7 +1015,7 @@
             "min": 6,
             "max": 28,
             "step": 0.5,
-            "label": "&deg;C"
+            "label": "°C"
           }
         ]
       },
@@ -1140,8 +1031,8 @@
         },
         "args": [
           {
-            "name": "device",
             "type": "device",
+            "name": "device",
             "filter": "driver_id=stella_zwave"
           },
           {
@@ -1241,7 +1132,23 @@
       "images": {
         "large": "/drivers/comet_zwave/assets/images/large.png",
         "small": "/drivers/comet_zwave/assets/images/small.png"
-      }
+      },
+      "settings": [
+        {
+          "id": "economic_temperature",
+          "type": "number",
+          "label": {
+            "en": "Temperature economy mode",
+            "nl": "Temperatuur economie modus"
+          },
+          "value": 18,
+          "attr": {
+            "min": 6,
+            "max": 28,
+            "step": 0.1
+          }
+        }
+      ]
     },
     {
       "id": "spirit_zwave",
@@ -1347,9 +1254,13 @@
         {
           "id": "flip_screen",
           "type": "checkbox",
+          "zwave": {
+            "index": 1,
+            "size": 1
+          },
           "label": {
-            "en": "Flip Screen",
-            "nl": "Draai Scherm Om"
+            "en": "Flipped screen",
+            "nl": "Scherm omgedraait"
           },
           "hint": {
             "en": "This will rotate the screen 180 degrees.",
@@ -1360,13 +1271,17 @@
         {
           "id": "screen_timeout",
           "type": "number",
+          "zwave": {
+            "index": 2,
+            "size": 1
+          },
           "label": {
-            "en": "Screen Timeout",
-            "nl": "Scherm Timeout"
+            "en": "Screen timeout",
+            "nl": "Scherm timeout"
           },
           "hint": {
-            "en": "After how many seconds should the screen turn off.\n Range: 0 (always on), 5 - 30 seconds.",
-            "nl": "Na hoeveel seconden hoort het scherm uit te gaan.\n Bereik: 0 (altijd aan), 5 - 30 seconden."
+            "en": "After how many seconds should the screen turn off.\nDefault: 0 seconds.\nMinimal: 5 seconds.\nDisabled: 0.",
+            "nl": "Na hoeveel seconden hoort het scherm uit te gaan.\nStandaard: 0.\nMinimaal: 5 seconden.\nGedactiveerd: 0."
           },
           "value": 0,
           "attr": {
@@ -1377,18 +1292,30 @@
         {
           "id": "backlight",
           "type": "checkbox",
+          "zwave": {
+            "index": 3,
+            "size": 1
+          },
           "label": {
-            "en": "Backlight",
-            "nl": "Achtergrond Verlichting"
+            "en": "Backlight on",
+            "nl": "Achtergrond verlichting aan"
           },
           "value": true
         },
         {
           "id": "battery_report",
           "type": "dropdown",
+          "zwave": {
+            "index": 4,
+            "size": 1
+          },
           "label": {
-            "en": "Battery Level Report",
-            "nl": "Batterij Niveau Verzending"
+            "en": "Battery level report",
+            "nl": "Batterij niveau verzending"
+          },
+          "hint": {
+            "en": "It only sends in steps of 5%.",
+            "nl": "Het stuurt alleen in stappen van 5%."
           },
           "value": "1",
           "values": [
@@ -1411,13 +1338,17 @@
         {
           "id": "temperature_threshold",
           "type": "number",
+          "zwave": {
+            "index": 5,
+            "size": 1
+          },
           "label": {
-            "en": "Measured Temperature Threshold",
-            "nl": "Gemeten Temperatuur Drempel"
+            "en": "Measured temperature threshold",
+            "nl": "Gemeten temperatuur drempel"
           },
           "hint": {
-            "en": "How much must the temperature change between 2 measurements, before it is being send.\n Range: 0 (disabled), 0.1 - 5.0 °C.",
-            "nl": "Hoeveel moet de temperatuur veranderen tussen 2 metingen in, voor het wordt verzonden.\n Bereik: 0 (gedeactiveerd), 0,1 - 5,0 °C."
+            "en": "How much must the temperature change between 2 measurements, before it is being send.\nSteps: 0.1 °C\nDefault: 0.1 °C.\nDisabled: 0.",
+            "nl": "Hoeveel moet de temperatuur veranderen tussen 2 metingen in, voor het wordt verzonden.\nStappen: 0,1 °C\nStandaard: 0,1 °C.\nGedactiveerd: 0."
           },
           "value": 0.1,
           "attr": {
@@ -1429,13 +1360,17 @@
         {
           "id": "valve_threshold",
           "type": "number",
+          "zwave": {
+            "index": 6,
+            "size": 1
+          },
           "label": {
-            "en": "Manual Valve Threshold",
-            "nl": "Handmatige Kraan Drempel"
+            "en": "Manual valve threshold",
+            "nl": "Handmatige kraan drempel"
           },
           "hint": {
-            "en": "How much must the valve position change, in manual mode, before it is being send.\n Range: 0 (disabled), 1% - 100%.",
-            "nl": "Hoeveel moet de kraan positie veranderen, in handmatige modus, voor het wordt verzonden.\n Bereik: 0 (gedeactiveerd), 1% - 100%."
+            "en": "How much must the valve position change, in manual mode, before it is being send.\nDefault: 0%.\nDisabled: 0.",
+            "nl": "Hoeveel moet de kraan positie veranderen, in handmatige modus, voor het wordt verzonden.\nStandaard: 0%.\nGedactiveerd: 0."
           },
           "value": 0,
           "attr": {
@@ -1446,9 +1381,13 @@
         {
           "id": "window_open_detection",
           "type": "dropdown",
+          "zwave": {
+            "index": 7,
+            "size": 1
+          },
           "label": {
-            "en": "Window Open Sensitivity",
-            "nl": "Raam Open Gevoeligheid"
+            "en": "Window open sensitivity",
+            "nl": "Raam open gevoeligheid"
           },
           "value": "2",
           "values": [
@@ -1469,8 +1408,8 @@
             {
               "id": "2",
               "label": {
-                "en": "Middle",
-                "nl": "Middel"
+                "en": "Middle (default)",
+                "nl": "Middel (standaard)"
               }
             },
             {
@@ -1485,13 +1424,17 @@
         {
           "id": "measure_temperature_calibration",
           "type": "number",
+          "zwave": {
+            "index": 8,
+            "size": 1
+          },
           "label": {
-            "en": "Measure Temperature Calibration",
-            "nl": "Gemeten Temperatuur Calibratie"
+            "en": "Measured temperature calibration",
+            "nl": "Gemeten temperatuur calibratie"
           },
           "hint": {
-            "en": "Range: -5.0 - +5.0 °C",
-            "nl": "Bereik: -5.0 - +5.0 °C"
+            "en": "Default: 0 °C",
+            "nl": "Standaard: 0 °C"
           },
           "value": 0,
           "attr": {
@@ -1503,12 +1446,16 @@
         {
           "id": "external_temperature",
           "type": "checkbox",
+          "zwave": {
+            "index": 8,
+            "size": 1
+          },
           "label": {
-            "en": "(External) Room Temperature",
-            "nl": "(Externe) Kamer Temperatuur"
+            "en": "(External) Room temperature",
+            "nl": "(Externe) Kamer temperatuur"
           },
           "hint": {
-            "en": "When enabled, the Spirit will use the temperature send by flow, or an associated temperature measuring device, for the room temperature.\n\nThis wil disable the temperature measuring on the Spirit itself",
+            "en": "When enabled, the Spirit will use the temperature send in a flow, or an associated temperature measuring device, as the room temperature.\n\nThis wil disable the temperature measuring on the Spirit itself",
             "nl": "Wanneer geactiveerd, zal de Spirit een in flow verzonden temperatuur, of een geassocieerd temperatuur metend apparaat gebruiken, voor de kamer temperatuur.\n\nDit zal de temperatuur meting van de Spirit zelf deactiveren"
           },
           "value": false
@@ -1517,12 +1464,12 @@
           "id": "child_protection",
           "type": "dropdown",
           "label": {
-            "en": "Protection State",
-            "nl": "Beveiliging Status"
+            "en": "Protection state",
+            "nl": "Beveiliging status"
           },
           "hint": {
-            "en": "You can unlock by holding the plus and minus buttons.",
-            "nl": "Je kan ontgrendelen door de plus en min knoppen in te houden."
+            "en": "You can (un)lock by holding the plus and minus buttons.",
+            "nl": "Je kan (ont)grendelen door de plus en min knoppen in te houden."
           },
           "value": "0",
           "values": [
@@ -1548,6 +1495,20 @@
               }
             }
           ]
+        },
+        {
+          "id": "economic_temperature",
+          "type": "number",
+          "label": {
+            "en": "Temperature economy mode",
+            "nl": "Temperatuur economie modus"
+          },
+          "value": 18,
+          "attr": {
+            "min": 8,
+            "max": 28,
+            "step": 0.1
+          }
         }
       ]
     },
@@ -1633,7 +1594,176 @@
       "images": {
         "large": "/drivers/stella_zwave/assets/images/large.png",
         "small": "/drivers/stella_zwave/assets/images/small.png"
-      }
+      },
+      "settings": [
+        {
+          "id": "economic_temperature",
+          "type": "number",
+          "label": {
+            "en": "Temperature economy mode",
+            "nl": "Temperatuur economie modus"
+          },
+          "value": 18,
+          "attr": {
+            "min": 6,
+            "max": 28,
+            "step": 0.1
+          }
+        }
+      ]
     }
-  ]
+  ],
+  "capabilities": {
+    "eurotronic_manual_value": {
+      "type": "number",
+      "uiComponent": "slider",
+      "title": {
+        "en": "Manual position",
+        "nl": "Handmatige Positie"
+      },
+      "desc": {
+        "en": "The manual position of the thermostat valve",
+        "nl": "De handmatige positie van de thermostaatkraan"
+      },
+      "getable": true,
+      "setable": true,
+      "insights": true,
+      "chartType": "line",
+      "min": 0,
+      "max": 1,
+      "decimals": 2
+    },
+    "eurotronic_mode": {
+      "type": "enum",
+      "uiComponent": "picker",
+      "title": {
+        "en": "Thermostat mode",
+        "nl": "Thermostaat modus"
+      },
+      "desc": {
+        "en": "Mode of the thermostat",
+        "nl": "Modus van de thermostaat"
+      },
+      "values": [
+        {
+          "id": "Off",
+          "title": {
+            "en": "Off (6°C)",
+            "nl": "Uit (6°C)"
+          }
+        },
+        {
+          "id": "Heat",
+          "title": {
+            "en": "Comfortable",
+            "nl": "Comfortabel"
+          }
+        },
+        {
+          "id": "Energy Save Heat",
+          "title": {
+            "en": "Economic",
+            "nl": "Economische"
+          }
+        },
+        {
+          "id": "MANUFACTURER SPECIFC",
+          "title": {
+            "en": "Manual",
+            "nl": "Handmatig"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true
+    },
+    "eurotronic_mode_spirit": {
+      "type": "enum",
+      "uiComponent": "picker",
+      "title": {
+        "en": "Thermostat mode",
+        "nl": "Thermostaat modus"
+      },
+      "desc": {
+        "en": "Mode of the thermostat",
+        "nl": "Modus van de thermostaat"
+      },
+      "values": [
+        {
+          "id": "Off",
+          "title": {
+            "en": "Off (6°C)",
+            "nl": "Uit (6°C)"
+          }
+        },
+        {
+          "id": "Heat",
+          "title": {
+            "en": "Comfortable",
+            "nl": "Comfortabel"
+          }
+        },
+        {
+          "id": "Energy Save Heat",
+          "title": {
+            "en": "Economic",
+            "nl": "Economische"
+          }
+        },
+        {
+          "id": "FULL POWER",
+          "title": {
+            "en": "Boost",
+            "nl": "Boost"
+          }
+        },
+        {
+          "id": "MANUFACTURER SPECIFC",
+          "title": {
+            "en": "Manual",
+            "nl": "Handmatig"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true
+    },
+    "eurotronic_protection": {
+      "type": "enum",
+      "uiComponent": "picker",
+      "title": {
+        "en": "(Child) Protection",
+        "nl": "(Kinder) Beveiliging"
+      },
+      "desc": {
+        "en": "The (child) protection state of the thermostatic.",
+        "nl": "De (kinder) beveiliging status van de thermostaatkraan."
+      },
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "unprotected",
+          "title": {
+            "en": "Unprotected",
+            "nl": "Onbeveiligt"
+          }
+        },
+        {
+          "id": "unlockable",
+          "title": {
+            "en": "Unlockable protected",
+            "nl": "Ontgrendelbaar beveiligt"
+          }
+        },
+        {
+          "id": "protected",
+          "title": {
+            "en": "Protected",
+            "nl": "Beveiligt"
+          }
+        }
+      ]
+    }
+  }
 }

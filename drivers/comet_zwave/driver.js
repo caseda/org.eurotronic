@@ -1,262 +1,40 @@
 'use strict';
 
-const path = require('path');
-const ZwaveDriver = require('homey-zwavedriver');
+const Homey = require('homey');
 
-// https://www.eurotronic.org/fileadmin/user_upload/eurotronic.org/Download-BAL-WB/Comet-Z-wave/Comet-zwave-BDA_eng.pdf
+class CometZwaveDriver extends Homey.Driver {
+	onInit() {
+		super.onInit();
 
-module.exports = new ZwaveDriver(path.basename(__dirname), {
-	capabilities: {
-		measure_battery: {
-			getOnWakeUp: true,
-			command_class: 'COMMAND_CLASS_BATTERY',
-			command_get: 'BATTERY_GET',
-			command_report: 'BATTERY_REPORT',
-			command_report_parser: report => {
-				if (!report) return null;
-				if (typeof report['Battery Level'] === 'string' && report['Battery Level'] === 'battery low warning') return 1;
-				if (typeof report['Battery Level (Raw)'] !== 'undefined') return report['Battery Level (Raw)'][0];
-				return null;
-			},
-		},
+		this.cometModeChanged = new Homey.FlowCardTriggerDevice('comet_euro_mode_changed').register();
 
-		measure_temperature: {
-			getOnWakeUp: true,
-			command_class: 'COMMAND_CLASS_SENSOR_MULTILEVEL',
-			command_get: 'SENSOR_MULTILEVEL_GET',
-			command_report: 'SENSOR_MULTILEVEL_REPORT',
-			command_report_parser: report => {
-				if (!report) return null;
-				if (report['Sensor Type'] === 'Temperature (version 1)') return report['Sensor Value (Parsed)'];
-				return null;
-			},
-		},
-
-		target_temperature: {
-			getOnWakeUp: true,
-			command_class: 'COMMAND_CLASS_THERMOSTAT_SETPOINT',
-			command_get: 'THERMOSTAT_SETPOINT_GET',
-			command_get_parser: node => {
-				let mode = 'Heating 1';
-				if (node && typeof node.state.eurotronic_mode !== 'undefined' && node.state.eurotronic_mode === 'Energy Save Heat') {
-					mode = 'Energy Save Heating';
-				}
-				return {
-					Level: {
-						'Setpoint Type': mode,
-					},
-				};
-			},
-			command_set: 'THERMOSTAT_SETPOINT_SET',
-			command_set_parser: value => {
-				// Create 2 byte buffer of value, with value rounded to xx.5
-				if (!value) value = 18;
-				let newTemp = new Buffer(2);
-				newTemp.writeUIntBE((value * 2).toFixed() / 2 * 10, 0, 2);
-
-				return {
-					Level: {
-						'Setpoint Type': 'Heating 1'
-					},
-					Level2: {
-						Precision: 1, // Number has one decimal
-						Scale: 0, // No scale used
-						Size: 2, // Value = 2 Bytes
-					},
-					Value: newTemp,
-				};
-			},
-			command_report: 'THERMOSTAT_SETPOINT_REPORT',
-			command_report_parser: report => {
-				if (report &&
-					report.hasOwnProperty('Value') &&
-					report.hasOwnProperty('Level2') &&
-					typeof report.Level2.Precision === 'number' &&
-					typeof report.Level2.Size === 'number') {
-
-					let targetValue;
-					try {
-						targetValue = report.Value.readUIntBE(0, report.Level2.Size);
-					} catch (err) {
-						return null;
-					}
-					if (typeof targetValue === 'number') return targetValue / Math.pow(10, report.Level2.Precision);
-					return null;
-				}
-				return null;
-			},
-		},
-
-		eurotronic_mode: {
-			getOnWakeUp: true,
-			command_class: 'COMMAND_CLASS_THERMOSTAT_MODE',
-			command_get: 'THERMOSTAT_MODE_GET',
-			command_set: 'THERMOSTAT_MODE_SET',
-			command_set_parser: value => ({
-				Level: {
-					'No of Manufacturer Data fields': 0,
-					Mode: value,
-				},
-				'Manufacturer Data': new Buffer([0]),
-			}),
-			command_report: 'THERMOSTAT_MODE_REPORT',
-			command_report_parser: (report, node) => {
-				if (!report) return null;
-				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
-					if (node && typeof node.state.eurotronic_mode != 'undefined') {
-						Homey.manager('flow').triggerDevice('comet_euro_mode_changed', { mode: report.Level.Mode, mode_name: __("mode." + report.Level.Mode) }, null, node.device_data);
-						Homey.manager('flow').triggerDevice('comet_euro_mode_changed_to', null, { mode: report.Level.Mode }, node.device_data);
-					}
-					return report.Level.Mode;
-				}
-				return null;
-			},
-		},
-
-		eurotronic_manual_value: {
-			getOnWakeUp: true,
-			command_class: 'COMMAND_CLASS_SWITCH_MULTILEVEL',
-			command_get: 'SWITCH_MULTILEVEL_GET',
-			command_report: 'SWITCH_MULTILEVEL_REPORT',
-			command_report_parser: (report, node) => {
-				if (!report) return null;
-				if (typeof report.Value === 'string') {
-					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null, node.device_data);
-					return (report.Value === 'on/enable') ? 1.0 : 0.0;
-				}
-				if (typeof report.Value === 'number') {
-					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report.Value / 100 }, null, node.device_data);
-					return report.Value / 100;
-				}
-				if (typeof report['Value (Raw)'] !== 'undefined') {
-					if (report['Value (Raw)'] === 254) return null;
-					if (report['Value (Raw)'][0] === 255) {
-						if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: 1.0 }, null, node.device_data);
-						return 1.0;
-					}
-					if (node) Homey.manager('flow').triggerDevice('comet_euro_manual_position', { value: report['Value (Raw)'][0] / 100 }, null, node.device_data);
-					return report['Value (Raw)'][0] / 100;
-				}
-				return null;
-			},
-		},
-	},
-});
-
-Homey.manager('flow').on('trigger.comet_euro_mode_changed_to', (callback, args, state) => {
-	if (!args) return callback('arguments_error', false);
-	else if (!state) return callback('state_error', false);
-
-	else if(typeof args.mode !== 'undefined' && typeof state.mode !== 'undefined' && args.mode === state.mode) return callback(null, true);
-	else return callback('unknown_error', false);
-});
-
-Homey.manager('flow').on('condition.comet_euro_mode', (callback, args) => {
-	const node = module.exports.nodes[args.device.token];
-	if (!node) return callback('device_unavailable', false);
-	else if (!args) return callback('arguments_error', false);
-
-	else if (typeof node.state.eurotronic_mode !== 'undefined' && typeof args.mode !== 'undefined') {
-		if (node.state.eurotronic_mode === args.mode) return callback(null, true);
-		else return callback(null, false);
-	}
-
-	else return callback('unknown_error', false);
-});
-
-Homey.manager('flow').on('action.comet_eco_temperature', (callback, args) => {
-	const node = module.exports.nodes[args.device.token];
-	if (!node) return callback('device_unavailable', false);
-	else if (!args) return callback('arguments_error', false);
-
-	else if (args.hasOwnProperty('temperature') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT !== 'undefined') {
-		// Create 2 byte buffer of value, rounded to xx.5
-		let temp = new Buffer(2);
-		temp.writeUIntBE((args.temperature * 2).toFixed() / 2 * 10, 0, 2);
-		// send the temperature + arguments to the module
-		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_SETPOINT.THERMOSTAT_SETPOINT_SET ({
-			Level: {
-				'Setpoint Type': 'Energy Save Heating'
-			},
-			Level2: {
-				Precision: 1, // Number has one decimal
-				Scale: 0, // No scale used
-				Size: 2, // Value = 2 Bytes
-			},
-			Value: temp,
-		}, (err, result) => {
-			if (err) return callback(err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				module.exports.realtime(node.device_data, 'target_temperature', args.temperature);
-				module.exports.realtime(node.device_data, 'eurotronic_mode', 'Energy Save Heat');
-				return callback(null, true);
-			} else return callback(result, false);
-		});
-	} else return callback('unknown_error', false);
-});
-
-Homey.manager('flow').on('action.comet_manual_control', (callback, args) => {
-	const node = module.exports.nodes[args.device.token];
-	let timeout = 0;
-	if (!node) return callback('device_unavailable', false);
-	else if (!args) return callback('arguments_error', false);
-
-	else if ((typeof node.state.eurotronic_mode === 'undefined' ||
-		node.state.eurotronic_mode !== 'MANUFACTURER SPECIFC') &&
-		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
-		// Change the mode to Manufacturer Specific
-		timeout = 300;
-		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
-			Level: {
-				'No of Manufacturer Data fields': 0,
-				Mode: 'MANUFACTURER SPECIFC',
-			},
-			'Manufacturer Data': new Buffer([0]),
-		}, (err, result) => {
-			if (err) return callback('mode_set_' + err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				module.exports.realtime(node.device_data, 'eurotronic_mode', 'MANUFACTURER SPECIFC');
-			} else return callback('mode_set_' + result, false);
-		});
-	}
-
-	setTimeout(() => {
-		if (args.hasOwnProperty('value') && typeof node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL !== 'undefined') {
-			// Send the manual control value to the module
-			node.instance.CommandClass.COMMAND_CLASS_SWITCH_MULTILEVEL.SWITCH_MULTILEVEL_SET ({
-				Value: Math.round(args.value * 100),
-				'Dimming Duration': 'Factory default',
-			}, (err, result) => {
-				if (err) return callback('value_set_' + err, false);
-				else if (result === 'TRANSMIT_COMPLETE_OK') {
-					module.exports.realtime(node.device_data, 'eurotronic_manual_value', args.value);
-					return callback(null, true);
-				}
-				else return callback('value_set_' + result, false);
+		this.cometModeChangedTo = new Homey.FlowCardTriggerDevice('comet_euro_mode_changed_to').register()
+			.registerRunListener((args, state) => {
+				return args.device.cometModeChangedRunListener(args, state);
 			});
-		} else return callback('unknown_error', false);
-	}, timeout);
-});
 
-Homey.manager('flow').on('action.comet_set_euro_mode', (callback, args) => {
-	const node = module.exports.nodes[args.device.token];
-	if (!node) return callback('device_unavailable', false);
-	else if (!args) return callback('arguments_error', false);
+		this.cometManualPosition = new Homey.FlowCardTriggerDevice('comet_euro_manual_position').register();
 
-	else if (args.hasOwnProperty('euro_mode') && typeof node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE !== 'undefined') {
-		// send the mode + arguments to the module
-		node.instance.CommandClass.COMMAND_CLASS_THERMOSTAT_MODE.THERMOSTAT_MODE_SET ({
-			Level: {
-				'No of Manufacturer Data fields': 0,
-				Mode: args.euro_mode,
-			},
-			'Manufacturer Data': new Buffer([0]),
-		}, (err, result) => {
-			if (err) return callback(err, false);
-			else if (result === 'TRANSMIT_COMPLETE_OK') {
-				module.exports.realtime(node.device_data, 'target_temperature', args.euro_mode);
-				return callback(null, true);
-			} else return callback(result, false);
-		});
-	} else return callback('unknown_error', false);
-});
+		this.cometMode = new Homey.FlowCardCondition('comet_euro_mode').register()
+			.registerRunListener((args, state) => {
+				return args.device.cometModeRunListener(args, state);
+			});
+
+		this.cometSetEcoTemperature = new Homey.FlowCardAction('comet_eco_temperature').register()
+			.registerRunListener((args, state) => {
+				return args.device.cometSetEcoTemperatureRunListener(args, state);
+			});
+
+		this.cometManualControl = new Homey.FlowCardAction('comet_manual_control').register()
+			.registerRunListener((args, state) => {
+				return args.device.cometManualControlRunListener(args, state);
+			});
+
+		this.cometSetMode = new Homey.FlowCardAction('comet_set_euro_mode').register()
+			.registerRunListener((args, state) => {
+				return args.device.cometSetModeRunListener(args, state);
+			});
+	}
+}
+
+module.exports = CometZwaveDriver;

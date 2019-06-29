@@ -1,0 +1,19 @@
+{
+  "type": "number",
+  "uiComponent": "slider",
+  "title": {
+    "en": "Manual position",
+    "nl": "Handmatige Positie"
+  },
+  "desc": {
+    "en": "The manual position of the thermostat valve",
+    "nl": "De handmatige positie van de thermostaatkraan"
+  },
+  "getable": true,
+  "setable": true,
+  "insights": true,
+  "chartType": "line",
+  "min": 0,
+  "max": 1,
+  "decimals": 2
+}

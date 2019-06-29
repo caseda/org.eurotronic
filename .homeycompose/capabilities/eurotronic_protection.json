@@ -1,0 +1,37 @@
+{
+  "type": "enum",
+  "uiComponent": "picker",
+  "title": {
+    "en": "(Child) Protection",
+    "nl": "(Kinder) Beveiliging"
+  },
+  "desc": {
+    "en": "The (child) protection state of the thermostatic.",
+    "nl": "De (kinder) beveiliging status van de thermostaatkraan."
+  },
+  "getable": true,
+  "setable": true,
+  "values": [
+    {
+      "id": "unprotected",
+      "title": {
+        "en": "Unprotected",
+        "nl": "Onbeveiligt"
+      }
+    },
+    {
+      "id": "unlockable",
+      "title": {
+        "en": "Unlockable protected",
+        "nl": "Ontgrendelbaar beveiligt"
+      }
+    },
+    {
+      "id": "protected",
+      "title": {
+        "en": "Protected",
+        "nl": "Beveiligt"
+      }
+    }
+  ]
+}

@@ -3,6 +3,16 @@
 		"Off": "Uit",
 		"Heat": "Comfortabel",
 		"Energy Save Heat": "Economische",
+		"FULL POWER": "Boost",
 		"MANUFACTURER SPECIFC": "Handmatig"
+	},
+	"error": {
+		"valve": {
+			"0": "Fout gewist",
+			"1": "Motor beweging niet mogelijk",
+			"2": "Niet gemonteerd op een kraan",
+			"3": "Kraan gesloten positie kon niet worden bepaald",
+			"4": "Ventiel positionering mislukt"
+		}
 	}
 }

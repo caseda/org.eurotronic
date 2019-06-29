@@ -1,10 +1,10 @@
 {
   "name": "org.eurotronic",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "This app adds support for Eurotronic Technology Z-Wave devices in Homey",
   "main": "app.js",
   "dependencies": {
-    "homey-zwavedriver": "git+https://github.com/athombv/node-homey-zwavedriver.git"
+    "homey-meshdriver": "^1.2.30"
   },
   "devDependencies": {},
   "scripts": {

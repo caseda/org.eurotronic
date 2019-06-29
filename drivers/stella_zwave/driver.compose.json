@@ -1,0 +1,84 @@
+{
+	"id": "stella_zwave",
+	"name": {
+		"en": "Stella Z-Wave Thermostat",
+		"nl": "Stella Z-Wave Thermostaat"
+	},
+	"zwave": {
+		"manufacturerId": 328,
+		"productTypeId": 1,
+		"productId": [
+			1
+		],
+		"learnmode": {
+			"image": "/drivers/stella_zwave/assets/learnmode.svg",
+			"instruction": {
+				"en": "Use the tool to Press the small button for 2.5 seconds.",
+				"nl": "Gebruik de tool om 2,5 seconden op de kleine knop te drukken."
+			}
+		},
+		"associationGroups": [
+			1
+		],
+		"associationGroupsOptions": {
+			"1": {
+				"hint": {
+					"en": "This is the controller group, it is not recommended to change this ID",
+					"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+				}
+			}
+		},
+		"wakeUpInterval": 3600
+	},
+	"class": "thermostat",
+	"capabilities": [
+		"measure_battery",
+		"eurotronic_mode",
+		"measure_temperature",
+		"target_temperature",
+		"eurotronic_manual_value"
+	],
+	"capabilitiesOptions": {
+		"target_temperature": {
+			"min": 6,
+			"max": 28,
+			"step": 0.5
+		}
+	},
+	"mobile": {
+		"components": [
+			{
+				"id": "icon",
+				"capabilities": [ ]
+			},
+			{
+				"id": "battery",
+				"capabilities": [
+					"measure_battery"
+				]
+			},
+			{
+				"id": "picker",
+				"capabilities": [
+					"eurotronic_mode"
+				]
+			},
+			{
+				"id": "sensor",
+				"capabilities": [
+					"measure_temperature"
+				]
+			},
+			{
+				"id": "thermostat",
+				"capabilities": [
+					"target_temperature"
+				]
+			}
+		]
+	},
+	"images": {
+		"large": "/drivers/stella_zwave/assets/images/large.png",
+		"small": "/drivers/stella_zwave/assets/images/small.png"
+	}
+}

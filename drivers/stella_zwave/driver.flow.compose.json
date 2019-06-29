@@ -1,0 +1,233 @@
+{
+	"actions": [
+		{
+			"id": "stella_set_euro_mode",
+			"title": {
+				"en": "Set thermostat mode",
+				"nl": "Zet thermostaat modus"
+			},
+			"hint": {
+				"en": "Set the mode of the thermostatic",
+				"nl": "Zet de modus van de thermostaat kraan"
+			},
+			"args": [
+				{
+					"name": "euro_mode",
+					"type": "dropdown",
+					"values": [
+						{
+							"id": "Off",
+							"label": {
+								"en": "Off (6°C)",
+								"nl": "Uit (6°C)"
+							}
+						},
+						{
+							"id": "Heat",
+							"label": {
+								"en": "Comfortable",
+								"nl": "Comfortabel"
+							}
+						},
+						{
+							"id": "Energy Save Heat",
+							"label": {
+								"en": "Economic",
+								"nl": "Economische"
+							}
+						},
+						{
+							"id": "MANUFACTURER SPECIFC",
+							"label": {
+								"en": "Manual",
+								"nl": "Handmatig"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "stella_eco_temperature",
+			"title": {
+				"en": "Set economy temperature",
+				"nl": "Zet economie temperatuur"
+			},
+			"hint": {
+				"en": "This sets the temperature for the Economy mode",
+				"nl": "Dit zet de temperatuur voor de Economie modus"
+			},
+			"args": [
+				{
+					"name": "temperature",
+					"type": "range",
+					"min": 6,
+					"max": 28,
+					"step": 0.5,
+					"label": "°C"
+				}
+			]
+		},
+		{
+			"id": "stella_manual_control",
+			"title": {
+				"en": "Set thermostatic position",
+				"nl": "Zet thermostaatkraan postitie"
+			},
+			"hint": {
+				"en": "This will set the manual thermostatic's valve position.\n0 = fully closed, 100 = fully open.",
+				"nl": "Dit zet de Handmatige postitie van de thermostaatkraan.\n0 = volledig gesloten, 100 = volledig open."
+			},
+			"args": [
+				{
+					"name": "value",
+					"type": "range",
+					"min": 0,
+					"max": 1,
+					"step": 0.01,
+					"labelMultiplier": 100,
+					"label": "%",
+					"labelDecimals": 2
+				}
+			]
+		}
+	],
+	"conditions": [
+		{
+			"id": "stella_euro_mode",
+			"title": {
+				"en": "Thermostat mode !{{is|isn't}}",
+				"nl": "Thermostaat modus !{{is|is niet}}"
+			},
+			"args": [
+				{
+					"name": "mode",
+					"type": "dropdown",
+					"values": [
+						{
+							"id": "Off",
+							"label": {
+								"en": "Off (6°C)",
+								"nl": "Uit (6°C)"
+							}
+						},
+						{
+							"id": "Heat",
+							"label": {
+								"en": "Comfortable",
+								"nl": "Comfortabel"
+							}
+						},
+						{
+							"id": "Energy Save Heat",
+							"label": {
+								"en": "Economic",
+								"nl": "Economische"
+							}
+						},
+						{
+							"id": "MANUFACTURER SPECIFC",
+							"label": {
+								"en": "Manual",
+								"nl": "Handmatig"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"triggers": [
+		{
+			"id": "stella_euro_mode_changed",
+			"title": {
+				"en": "Thermostatic mode has changed",
+				"nl": "Thermostaat modus is veranderd"
+			},
+			"tokens": [
+				{
+					"name": "mode",
+					"title": {
+						"en": "ID",
+						"nl": "ID"
+					},
+					"example": {
+						"en": "Heat"
+					}
+				},
+				{
+					"name": "mode_name",
+					"title": {
+						"en": "Name",
+						"nl": "Naam"
+					},
+					"example": {
+						"en": "Comfortable",
+						"nl": "Comfortabel"
+					}
+				}
+			]
+		},
+		{
+			"id": "stella_euro_mode_changed_to",
+			"title": {
+				"en": "Thermostatic mode has changed to",
+				"nl": "Thermostaat modus is veranderd naar"
+			},
+			"args": [
+				{
+					"name": "mode",
+					"type": "dropdown",
+					"values": [
+						{
+							"id": "Off",
+							"label": {
+								"en": "Off (6°C)",
+								"nl": "Uit (6°C)"
+							}
+						},
+						{
+							"id": "Heat",
+							"label": {
+								"en": "Comfortable",
+								"nl": "Comfortabel"
+							}
+						},
+						{
+							"id": "Energy Save Heat",
+							"label": {
+								"en": "Economic",
+								"nl": "Economische"
+							}
+						},
+						{
+							"id": "MANUFACTURER SPECIFC",
+							"label": {
+								"en": "Manual",
+								"nl": "Handmatig"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "stella_euro_manual_position",
+			"title": {
+				"en": "Manual position changed",
+				"nl": "Handmatige positie veranderd"
+			},
+			"tokens": [
+				{
+					"name": "value",
+					"type": "number",
+					"title": {
+						"en": "position",
+						"nl": "positie"
+					},
+					"example": 0.5
+				}
+			]
+		}
+	]
+}

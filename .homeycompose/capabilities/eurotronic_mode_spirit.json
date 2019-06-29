@@ -1,0 +1,51 @@
+{
+  "type": "enum",
+  "uiComponent": "picker",
+  "title": {
+    "en": "Thermostat mode",
+    "nl": "Thermostaat modus"
+  },
+  "desc": {
+    "en": "Mode of the thermostat",
+    "nl": "Modus van de thermostaat"
+  },
+  "values": [
+    {
+      "id": "Off",
+      "title": {
+        "en": "Off (6°C)",
+        "nl": "Uit (6°C)"
+      }
+    },
+    {
+      "id": "Heat",
+      "title": {
+        "en": "Comfortable",
+        "nl": "Comfortabel"
+      }
+    },
+    {
+      "id": "Energy Save Heat",
+      "title": {
+        "en": "Economic",
+        "nl": "Economische"
+      }
+    },
+    {
+      "id": "FULL POWER",
+      "title": {
+        "en": "Boost",
+        "nl": "Boost"
+      }
+    },
+    {
+      "id": "MANUFACTURER SPECIFC",
+      "title": {
+        "en": "Manual",
+        "nl": "Handmatig"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true
+}

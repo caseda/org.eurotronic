@@ -1,0 +1,16 @@
+[
+	{
+		"id": "economic_temperature",
+		"type": "number",
+		"label": {
+			"en": "Temperature economy mode",
+			"nl": "Temperatuur economie modus"
+		},
+		"value": 18,
+		"attr": {
+			"min": 6,
+			"max": 28,
+			"step": 0.1
+		}
+	}
+]
