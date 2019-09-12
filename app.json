@@ -4,8 +4,8 @@
     "en": "Eurotronic Technology (Z-Wave)"
   },
   "sdk": 2,
-  "version": "2.0.7",
-  "compatibility": ">=1.5.0",
+  "version": "2.1.0",
+  "compatibility": ">=3.0.0",
   "brandColor": "#CB2223",
   "description": {
     "en": "Eurotronic Z-Wave devices for Homey",
