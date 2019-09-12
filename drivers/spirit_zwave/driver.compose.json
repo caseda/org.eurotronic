@@ -4,6 +4,12 @@
 		"en": "Spirit Z-Wave Thermostat",
 		"nl": "Spirit Z-Wave Thermostaat"
 	},
+  "energy": {
+    "batteries": [
+			"AA",
+		 	"AA"
+		]
+  },
 	"zwave": {
 		"manufacturerId": 328,
 		"productTypeId": 3,

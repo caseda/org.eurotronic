@@ -1056,6 +1056,12 @@
         "en": "Comet Z-Wave Thermostat",
         "nl": "Comet Z-Wave Thermostaat"
       },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
+      },
       "zwave": {
         "manufacturerId": 328,
         "productTypeId": 2,
@@ -1155,6 +1161,12 @@
       "name": {
         "en": "Spirit Z-Wave Thermostat",
         "nl": "Spirit Z-Wave Thermostaat"
+      },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
       },
       "zwave": {
         "manufacturerId": 328,
@@ -1517,6 +1529,12 @@
       "name": {
         "en": "Stella Z-Wave Thermostat",
         "nl": "Stella Z-Wave Thermostaat"
+      },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
       },
       "zwave": {
         "manufacturerId": 328,
