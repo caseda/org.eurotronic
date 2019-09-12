@@ -37,9 +37,11 @@ If you want to change the Wake-Up Interval, make sure you use Steps of 240 secon
 
 ### Change Log:
 **v2.1.0:**
-- [Spirit] Fix device's measured temperature overwriting the external temperature sensor value (when used).
 - Add battery types for Homey v3's Energy
-- Update meshdriver
+
+**v2.0.7:**
+- [Spirit] Fix device's measured temperature overwriting the external temperature sensor (when used).
+- Update meshdriver to v1.3.3
 
 **v2.0.6:**
 - [Comet] Fix crash
