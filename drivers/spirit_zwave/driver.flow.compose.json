@@ -228,21 +228,21 @@
 							"id": "unprotected",
 							"label": {
 								"en": "Unprotected",
-								"nl": "Onbeveiligt"
+								"nl": "Onbeveiligd"
 							}
 						},
 						{
 							"id": "unlockable",
 							"label": {
 								"en": "Unlockable protected",
-								"nl": "Ontgrendelbaar beveiligt"
+								"nl": "Ontgrendelbaar beveiligd"
 							}
 						},
 						{
 							"id": "protected",
 							"label": {
 								"en": "Protected",
-								"nl": "Beveiligt"
+								"nl": "Beveiligd"
 							}
 						}
 					]
@@ -363,7 +363,7 @@
 					},
 					"example": {
 						"en": "unprotected",
-						"nl": "onbeveiligt"
+						"nl": "onbeveiligd"
 					}
 				}
 			]

@@ -4,7 +4,7 @@
     "en": "Eurotronic Technology (Z-Wave)"
   },
   "sdk": 2,
-  "version": "2.0.6",
+  "version": "2.0.7",
   "compatibility": ">=1.5.0",
   "brandColor": "#CB2223",
   "description": {
@@ -304,7 +304,7 @@
             },
             "example": {
               "en": "unprotected",
-              "nl": "onbeveiligt"
+              "nl": "onbeveiligd"
             }
           }
         ],
@@ -578,21 +578,21 @@
                 "id": "unprotected",
                 "label": {
                   "en": "Unprotected",
-                  "nl": "Onbeveiligt"
+                  "nl": "Onbeveiligd"
                 }
               },
               {
                 "id": "unlockable",
                 "label": {
                   "en": "Unlockable protected",
-                  "nl": "Ontgrendelbaar beveiligt"
+                  "nl": "Ontgrendelbaar beveiligd"
                 }
               },
               {
                 "id": "protected",
                 "label": {
                   "en": "Protected",
-                  "nl": "Beveiligt"
+                  "nl": "Beveiligd"
                 }
               }
             ]

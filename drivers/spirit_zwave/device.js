@@ -46,6 +46,25 @@ class SpiritZwave extends ZwaveDevice {
 			getOpts: {
 				getOnOnline: false,
 			},
+			report: 'SENSOR_MULTILEVEL_REPORT',
+			reportParserOverride: true,
+			reportParser: report => {
+				if (this.getSetting('external_temperature')) return null;
+
+				if (report &&
+					report.hasOwnProperty('Sensor Type') &&
+					report['Sensor Type'] === 'Temperature (version 1)' &&
+					report.hasOwnProperty('Sensor Value (Parsed)') &&
+					report.hasOwnProperty('Level') &&
+					report.Level.hasOwnProperty('Scale')) {
+
+					// Some devices send this when no temperature sensor is connected
+					if (report['Sensor Value (Parsed)'] === -999.9) return null;
+					if (report.Level.Scale === 0) return report['Sensor Value (Parsed)'];
+					if (report.Level.Scale === 1) return (report['Sensor Value (Parsed)'] - 32) / 1.8;
+				}
+				return null;
+			},
 		});
 
 		this.registerCapability('target_temperature', 'THERMOSTAT_SETPOINT', {
