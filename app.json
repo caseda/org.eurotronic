@@ -4,8 +4,8 @@
     "en": "Eurotronic Technology (Z-Wave)"
   },
   "sdk": 2,
-  "version": "2.0.7",
-  "compatibility": ">=1.5.0",
+  "version": "2.1.0",
+  "compatibility": ">=3.0.0",
   "brandColor": "#CB2223",
   "description": {
     "en": "Eurotronic Z-Wave devices for Homey",
@@ -1056,6 +1056,12 @@
         "en": "Comet Z-Wave Thermostat",
         "nl": "Comet Z-Wave Thermostaat"
       },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
+      },
       "zwave": {
         "manufacturerId": 328,
         "productTypeId": 2,
@@ -1155,6 +1161,12 @@
       "name": {
         "en": "Spirit Z-Wave Thermostat",
         "nl": "Spirit Z-Wave Thermostaat"
+      },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
       },
       "zwave": {
         "manufacturerId": 328,
@@ -1517,6 +1529,12 @@
       "name": {
         "en": "Stella Z-Wave Thermostat",
         "nl": "Stella Z-Wave Thermostaat"
+      },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
       },
       "zwave": {
         "manufacturerId": 328,
