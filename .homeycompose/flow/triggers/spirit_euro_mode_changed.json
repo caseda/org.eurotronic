@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "Thermostatic mode has changed",
+    "nl": "Thermostaat modus is veranderd"
+  },
+  "tokens": [
+    {
+      "name": "mode",
+      "title": {
+        "en": "ID",
+        "nl": "ID"
+      },
+      "example": {
+        "en": "Heat"
+      }
+    },
+    {
+      "name": "mode_name",
+      "title": {
+        "en": "Name",
+        "nl": "Naam"
+      },
+      "example": {
+        "en": "Comfortable",
+        "nl": "Comfortabel"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "A valve error occurred",
+    "nl": "Een fout opgetreden in de kraan"
+  },
+  "tokens": [
+    {
+      "name": "error",
+      "title": {
+        "en": "error",
+        "nl": "fout"
+      },
+      "example": {
+        "en": "Motor movement not possible",
+        "nl": "Motor beweging niet mogelijk"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+	"id": "spirit_al_zwave",
+	"name": {
+		"en": "Aeotec Limited Spirit Z-Wave Thermostat",
+		"nl": "Aeotec Limited Spirit Z-Wave Thermostaat"
+	},
+  "energy": {
+    "batteries": [
+			"AA",
+		 	"AA"
+		]
+  },
+	"zwave": {
+		"manufacturerId": 881,
+		"productTypeId": 2,
+		"productId": [
+			21
+		],
+		"learnmode": {
+			"image": "/drivers/spirit_zwave/assets/learnmode.svg",
+			"instruction": {
+				"en": "Press the boost button once.",
+				"nl": "Druk 1 keer op de boost knop."
+			}
+		},
+		"unlearnmode": {
+			"image": "/drivers/spirit_zwave/assets/unlearnmode.svg",
+			"instruction": {
+				"en": "Hold the boost button for atleast 5 seconds.",
+				"nl": "Houdt de boost knop voor tenminste 5 seconden ingedrukt."
+			}
+		},
+		"associationGroups": [
+			1
+		],
+		"associationGroupsOptions": {
+			"1": {
+				"hint": {
+					"en": "This is the controller group, it is not recommended to change this ID",
+					"nl": "Dit is de controller groep, het is niet aangeraden deze ID te wijzigen"
+				}
+			}
+		},
+		"defaultConfiguration": [
+			{
+				"id": 5,
+				"size": 1,
+				"value": 1
+			}
+		]
+	},
+	"class": "thermostat",
+	"capabilities": [
+		"measure_battery",
+		"eurotronic_mode_spirit",
+		"measure_temperature",
+		"target_temperature",
+		"eurotronic_manual_value",
+		"eurotronic_protection"
+	],
+	"capabilitiesOptions": {
+		"target_temperature": {
+			"min": 8,
+			"max": 28,
+			"step": 0.5
+		}
+	},
+	"mobile": {
+		"components": [
+			{
+				"id": "icon",
+				"capabilities": [ ]
+			},
+			{
+				"id": "battery",
+				"capabilities": [
+					"measure_battery"
+				]
+			},
+			{
+				"id": "picker",
+				"capabilities": [
+					"eurotronic_mode_spirit"
+				]
+			},
+			{
+				"id": "sensor",
+				"capabilities": [
+					"measure_temperature"
+				]
+			},
+			{
+				"id": "thermostat",
+				"capabilities": [
+					"target_temperature"
+				]
+			}
+		]
+	},
+	"images": {
+		"large": "/drivers/spirit_zwave/assets/images/large.png",
+		"small": "/drivers/spirit_zwave/assets/images/small.png"
+	}
+}

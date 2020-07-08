@@ -1,0 +1,44 @@
+{
+  "title": {
+    "en": "Set protection state",
+    "nl": "Zet beveiliging status"
+  },
+  "hint": {
+    "en": "With this card you can set the (child) protection state.\nYou can unlock by holding the plus and minus buttons.",
+    "nl": "Met deze kaart kan je de (kinder) beveiligings status instellen.\nJe kan ontgrendelen door de plus en min knoppen in te houden."
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    },
+    {
+      "name": "state",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "unprotected",
+          "label": {
+            "en": "Unprotected",
+            "nl": "Onbeveiligd"
+          }
+        },
+        {
+          "id": "unlockable",
+          "label": {
+            "en": "Unlockable protected",
+            "nl": "Ontgrendelbaar beveiligd"
+          }
+        },
+        {
+          "id": "protected",
+          "label": {
+            "en": "Protected",
+            "nl": "Beveiligd"
+          }
+        }
+      ]
+    }
+  ]
+}

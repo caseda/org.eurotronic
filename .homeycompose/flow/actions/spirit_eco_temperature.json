@@ -1,0 +1,25 @@
+{
+  "title": {
+    "en": "Set economy temperature",
+    "nl": "Zet economie temperatuur"
+  },
+  "hint": {
+    "en": "This sets the temperature for the Economy mode",
+    "nl": "Dit zet de temperatuur voor de Economie modus"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    },
+    {
+      "name": "temperature",
+      "type": "range",
+      "min": 8,
+      "max": 28,
+      "step": 0.5,
+      "label": "°C"
+    }
+  ]
+}

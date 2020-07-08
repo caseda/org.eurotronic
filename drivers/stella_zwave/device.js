@@ -1,25 +1,72 @@
 'use strict';
 
-const Homey = require('homey');
-const ZwaveDevice = require('homey-meshdriver').ZwaveDevice;
+const { ZwaveDevice } = require('homey-zwavedriver');
 const supportedModes = ['Off', 'Heat', 'Energy Save Heat', 'MANUFACTURER SPECIFC'];
 
 class StellaZwave extends ZwaveDevice {
-	async onMeshInit() {
+	async onNodeInit({ node }) {
 		//this.printNode();
-		//this.enableDebug();
+		this.enableDebug();
 
-		// Registering Flows
-		this._stellaModeChanged = this.getDriver().stellaModeChanged;
-		this._stellaModeChangedTo = this.getDriver().stellaModeChangedTo;
-		this._stellaManualPosition = this.getDriver().stellaManualPosition;
-		this._stellaMode = this.getDriver().stellaMode;
-		this._stellaSetEcoTemperature = this.getDriver().stellaSetEcoTemperature;
-		this._stellaManualControl = this.getDriver().stellaManualControl;
-		this._stellaSetMode = this.getDriver().stellaSetMode;
+		// Register Flows
+		this._stellaModeChanged = this.homey.flow.getDeviceTriggerCard('stella_euro_mode_changed')
+		this._stellaManualPosition = this.homey.flow.getDeviceTriggerCard('stella_euro_manual_position');
 
-		// Capabilities
-		this.registerCapability('measure_battery', 'BATTERY');
+		this._stellaModeChangedTo = this.homey.flow.getDeviceTriggerCard('stella_euro_mode_changed_to').registerRunListener(async (args, state) => {
+			if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
+				return (args.mode == state.mode);
+			}
+			return false;
+    });
+
+		this._stellaMode = this.homey.flow.getConditionCard('stella_euro_mode').registerRunListener(async (args, state) => {
+			const currentMode = await this.getCapabilityValue('eurotronic_mode_stella');
+
+			if (args.hasOwnProperty('mode') && !(currentMode instanceof Error)) {
+				return (args.mode == currentMode);
+			}
+			return false;
+    });
+
+		this._stellaSetEcoTemperature = this.homey.flow.getActionCard('stella_eco_temperature').registerRunListener(async (args, state) => {
+			return await this._sendEconomicTemperature(args.temperature);
+    });
+
+		this._stellaManualControl = this.homey.flow.getActionCard('stella_manual_control').registerRunListener(async (args, state) => {
+			if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
+
+			const currentMode = this.getCapabilityValue('eurotronic_mode_stella');
+
+			if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
+				await this._sendMode('MANUFACTURER SPECIFC');
+			}
+
+			await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
+				Value: Math.ceil(args.value * 99),
+				'Dimming Duration': 'Factory default',
+			})
+			.catch(err => {
+				this.error(err);
+				return false;
+			})
+			.then(result => {
+				if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
+
+				this.setCapabilityValue('eurotronic_manual_value', args.value);
+				return true;
+			});
+    });
+
+		this._stellaSetMode = this.homey.flow.getActionCard('stella_set_euro_mode').registerRunListener(async (args, state) => {
+			return await this._sendMode(args.euro_mode);
+    });
+
+		// Register Capabilities
+		this.registerCapability('measure_battery', 'BATTERY', {
+			getOpts: {
+				getOnStart: false,
+			},
+		});
 
 		this.registerCapability('measure_temperature', 'SENSOR_MULTILEVEL', {
 			getOpts: {
@@ -29,14 +76,14 @@ class StellaZwave extends ZwaveDevice {
 
 		this.registerCapability('target_temperature', 'THERMOSTAT_SETPOINT', {
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 		});
 
-		this.registerCapability('eurotronic_mode', 'THERMOSTAT_MODE', {
+		this.registerCapability('eurotronic_mode_stella', 'THERMOSTAT_MODE', {
 			get: 'THERMOSTAT_MODE_GET',
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 			set: 'THERMOSTAT_MODE_SET',
 			setParser: value => ({
@@ -44,14 +91,16 @@ class StellaZwave extends ZwaveDevice {
 					'No of Manufacturer Data fields': 0,
 					Mode: value,
 				},
-				'Manufacturer Data': new Buffer([0]),
+				'Manufacturer Data': Buffer.from([0]),
 			}),
 			report: 'THERMOSTAT_MODE_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
 
-					if (this.getCapabilityValue('eurotronic_mode')) {
-						this._stellaModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: Homey.__("mode." + report.Level.Mode) }, null);
+					if (this.getCapabilityValue('eurotronic_mode_stella')) {
+						this._stellaModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: this.homey.__("mode." + report.Level.Mode) }, null);
 						this._stellaModeChangedTo.trigger(this, null, { mode: report.Level.Mode });
 					}
 
@@ -64,7 +113,7 @@ class StellaZwave extends ZwaveDevice {
 		this.registerCapability('eurotronic_manual_value', 'SWITCH_MULTILEVEL', {
 			get: 'SWITCH_MULTILEVEL_GET',
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 			set: 'SWITCH_MULTILEVEL_SET',
 			setParser: value => ({
@@ -73,6 +122,8 @@ class StellaZwave extends ZwaveDevice {
 			}),
 			report: 'SWITCH_MULTILEVEL_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (typeof report.Value === 'string') {
 					this._stellaManualPosition.trigger(this, { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null);
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
@@ -102,58 +153,6 @@ class StellaZwave extends ZwaveDevice {
 		this.registerSetting('economic_temperature', value => this._sendEconomicTemperature(value));
 	}
 
-	// Parsing Flows
-	stellaModeChangedRunListener(args, state) {
-		if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
-			return Promise.resolve(args.mode === state.mode);
-		}
-		return Promise.resolve(false);
-	}
-
-	stellaModeRunListener(args) {
-		const currentMode = this.getCapabilityValue('eurotronic_mode');
-
-		if (args.hasOwnProperty('mode')) {
-			return Promise.resolve(args.mode === currentMode);
-		}
-		return Promise.resolve(false);
-	}
-
-	async stellaSetEcoTemperatureRunListener(args) {
-		return await this._sendEconomicTemperature(args.value);
-	}
-
-	async stellaManualControlRunListener(args) {
-		if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
-
-		const currentMode = this.getCapabilityValue('eurotronic_mode');
-
-		if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
-			await this._sendMode('MANUFACTURER SPECIFC');
-		}
-
-		await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
-			Value: Math.ceil(args.value * 99),
-			'Dimming Duration': 'Factory default',
-		})
-		.catch(err => {
-			this.error(err);
-			return Promise.reject(err);
-		})
-		.then(result => {
-			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
-
-			this.setCapabilityValue('eurotronic_manual_value', args.value);
-			return Promise.resolve();
-		});
-	}
-
-	async stellaSetModeRunListener(args, state) {
-		if (!args.hasOwnProperty('euro_mode')) return Promise.reject('no_mode_given');
-
-		return await this._sendMode(args.euro_mode);
-	}
-
 	// Basic Functions
 	async _sendMode(mode) {
 		if (typeof mode === 'undefined') return Promise.reject('no_mode_given')
@@ -164,7 +163,7 @@ class StellaZwave extends ZwaveDevice {
 				'No of Manufacturer Data fields': 0,
 				Mode: mode,
 			},
-			'Manufacturer Data': new Buffer([0]),
+			'Manufacturer Data': Buffer.from([0]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -173,7 +172,7 @@ class StellaZwave extends ZwaveDevice {
 		.then(result => {
 			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
 
-			this.setCapabilityValue('eurotronic_mode', mode);
+			this.setCapabilityValue('eurotronic_mode_stella', mode);
 			return Promise.resolve(mode);
 		});
 	}
@@ -184,7 +183,7 @@ class StellaZwave extends ZwaveDevice {
 		let newTemperature;
 
 		try {
-			newTemperature = new Buffer(2);
+			newTemperature = Buffer.alloc(2);
 			newTemperature.writeUIntBE((temperature * 2).toFixed() / 2 * 10, 0, 2);
 		} catch(err) {
 			this.error(err);

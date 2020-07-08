@@ -1,0 +1,28 @@
+{
+  "title": {
+    "en": "Send room temperature",
+    "nl": "Zend kamer temperatuur"
+  },
+  "hint": {
+    "en": "Send an (external) temperature to the spirit so it knows the room temperature.\nThe setting \"(External) Room Temperature\" does need to be active to use this.",
+    "nl": "Stuur een (externe) temperatuur naar de spirit zodat het de kamer temperatuur weet.\nDe setting \"(Externe) Kamer Temperatuur\" moet wel geactiveerd zijn."
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    },
+    {
+      "name": "value",
+      "type": "number",
+      "min": 0,
+      "max": 40,
+      "step": 0.01,
+      "placeholder": {
+        "en": "In degree celcius",
+        "nl": "In graden celcius"
+      }
+    }
+  ]
+}

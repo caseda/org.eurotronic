@@ -1,25 +1,72 @@
 'use strict';
 
-const Homey = require('homey');
-const ZwaveDevice = require('homey-meshdriver').ZwaveDevice;
+const { ZwaveDevice } = require('homey-zwavedriver');
 const supportedModes = ['Off', 'Heat', 'Energy Save Heat', 'MANUFACTURER SPECIFC'];
 
 class CometZwave extends ZwaveDevice {
-	async onMeshInit() {
+	async onNodeInit({ node }) {
 		//this.printNode();
-		//this.enableDebug();
+		this.enableDebug();
 
-		// Registering Flows
-		this._cometModeChanged = this.getDriver().cometModeChanged;
-		this._cometModeChangedTo = this.getDriver().cometModeChangedTo;
-		this._cometManualPosition = this.getDriver().cometManualPosition;
-		this._cometMode = this.getDriver().cometMode;
-		this._cometSetEcoTemperature = this.getDriver().cometSetEcoTemperature;
-		this._cometManualControl = this.getDriver().cometManualControl;
-		this._cometSetMode = this.getDriver().cometSetMode;
+		// Register Flows
+		this._cometModeChanged = this.homey.flow.getDeviceTriggerCard('comet_euro_mode_changed')
+		this._cometManualPosition = this.homey.flow.getDeviceTriggerCard('comet_euro_manual_position');
 
-		// Capabilities
-		this.registerCapability('measure_battery', 'BATTERY');
+		this._cometModeChangedTo = this.homey.flow.getDeviceTriggerCard('comet_euro_mode_changed_to').registerRunListener(async (args, state) => {
+			if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
+				return (args.mode == state.mode);
+			}
+			return false;
+    });
+
+		this._cometMode = this.homey.flow.getConditionCard('comet_euro_mode').registerRunListener(async (args, state) => {
+			const currentMode = await this.getCapabilityValue('eurotronic_mode_comet');
+
+			if (args.hasOwnProperty('mode') && !(currentMode instanceof Error)) {
+				return (args.mode == currentMode);
+			}
+			return false;
+    });
+
+		this._cometSetEcoTemperature = this.homey.flow.getActionCard('comet_eco_temperature').registerRunListener(async (args, state) => {
+			return await this._sendEconomicTemperature(args.temperature);
+    });
+
+		this._cometManualControl = this.homey.flow.getActionCard('comet_manual_control').registerRunListener(async (args, state) => {
+			if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
+
+			const currentMode = this.getCapabilityValue('eurotronic_mode_comet');
+
+			if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
+				await this._sendMode('MANUFACTURER SPECIFC');
+			}
+
+			await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
+				Value: Math.ceil(args.value * 99),
+				'Dimming Duration': 'Factory default',
+			})
+			.catch(err => {
+				this.error(err);
+				return false;
+			})
+			.then(result => {
+				if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
+
+				this.setCapabilityValue('eurotronic_manual_value', args.value);
+				return true;
+			});
+    });
+
+		this._cometSetMode = this.homey.flow.getActionCard('comet_set_euro_mode').registerRunListener(async (args, state) => {
+			return await this._sendMode(args.euro_mode);
+    });
+
+		// Register Capabilities
+		this.registerCapability('measure_battery', 'BATTERY', {
+			getOpts: {
+				getOnStart: false,
+			},
+		});
 
 		this.registerCapability('measure_temperature', 'SENSOR_MULTILEVEL', {
 			getOpts: {
@@ -29,14 +76,14 @@ class CometZwave extends ZwaveDevice {
 
 		this.registerCapability('target_temperature', 'THERMOSTAT_SETPOINT', {
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 		});
 
-		this.registerCapability('eurotronic_mode', 'THERMOSTAT_MODE', {
+		this.registerCapability('eurotronic_mode_comet', 'THERMOSTAT_MODE', {
 			get: 'THERMOSTAT_MODE_GET',
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 			set: 'THERMOSTAT_MODE_SET',
 			setParser: value => ({
@@ -44,14 +91,16 @@ class CometZwave extends ZwaveDevice {
 					'No of Manufacturer Data fields': 0,
 					Mode: value,
 				},
-				'Manufacturer Data': new Buffer([0]),
+				'Manufacturer Data': Buffer.from([0]),
 			}),
 			report: 'THERMOSTAT_MODE_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
 
 					if (this.getCapabilityValue('eurotronic_mode_comet')) {
-						this._cometModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: Homey.__("mode." + report.Level.Mode) }, null);
+						this._cometModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: this.homey.__("mode." + report.Level.Mode) }, null);
 						this._cometModeChangedTo.trigger(this, null, { mode: report.Level.Mode });
 					}
 
@@ -64,7 +113,7 @@ class CometZwave extends ZwaveDevice {
 		this.registerCapability('eurotronic_manual_value', 'SWITCH_MULTILEVEL', {
 			get: 'SWITCH_MULTILEVEL_GET',
 			getOpts: {
-				getOnOnline: true,
+				getOnStart: true,
 			},
 			set: 'SWITCH_MULTILEVEL_SET',
 			setParser: value => ({
@@ -73,6 +122,8 @@ class CometZwave extends ZwaveDevice {
 			}),
 			report: 'SWITCH_MULTILEVEL_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (typeof report.Value === 'string') {
 					this._cometManualPosition.trigger(this, { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null);
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
@@ -102,58 +153,6 @@ class CometZwave extends ZwaveDevice {
 		this.registerSetting('economic_temperature', value => this._sendEconomicTemperature(value));
 	}
 
-	// Parsing Flows
-	cometModeChangedRunListener(args, state) {
-		if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
-			return Promise.resolve(args.mode === state.mode);
-		}
-		return Promise.resolve(false);
-	}
-
-	cometModeRunListener(args) {
-		const currentMode = this.getCapabilityValue('eurotronic_mode');
-
-		if (args.hasOwnProperty('mode')) {
-			return Promise.resolve(args.mode === currentMode);
-		}
-		return Promise.resolve(false);
-	}
-
-	async cometSetEcoTemperatureRunListener(args) {
-		return await this._sendEconomicTemperature(args.value);
-	}
-
-	async cometManualControlRunListener(args) {
-		if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
-
-		const currentMode = this.getCapabilityValue('eurotronic_mode');
-
-		if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
-			await this._sendMode('MANUFACTURER SPECIFC');
-		}
-
-		await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
-			Value: Math.ceil(args.value * 99),
-			'Dimming Duration': 'Factory default',
-		})
-		.catch(err => {
-			this.error(err);
-			return Promise.reject(err);
-		})
-		.then(result => {
-			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
-
-			this.setCapabilityValue('eurotronic_manual_value', args.value);
-			return Promise.resolve();
-		});
-	}
-
-	async cometSetModeRunListener(args, state) {
-		if (!args.hasOwnProperty('euro_mode')) return Promise.reject('no_mode_given');
-
-		return await this._sendMode(args.euro_mode);
-	}
-
 	// Basic Functions
 	async _sendMode(mode) {
 		if (typeof mode === 'undefined') return Promise.reject('no_mode_given')
@@ -164,7 +163,7 @@ class CometZwave extends ZwaveDevice {
 				'No of Manufacturer Data fields': 0,
 				Mode: mode,
 			},
-			'Manufacturer Data': new Buffer([0]),
+			'Manufacturer Data': Buffer.from([0]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -173,7 +172,7 @@ class CometZwave extends ZwaveDevice {
 		.then(result => {
 			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
 
-			this.setCapabilityValue('eurotronic_mode', mode);
+			this.setCapabilityValue('eurotronic_mode_comet', mode);
 			return Promise.resolve(mode);
 		});
 	}
@@ -184,7 +183,7 @@ class CometZwave extends ZwaveDevice {
 		let newTemperature;
 
 		try {
-			newTemperature = new Buffer(2);
+			newTemperature = Buffer.alloc(2);
 			newTemperature.writeUIntBE((temperature * 2).toFixed() / 2 * 10, 0, 2);
 		} catch(err) {
 			this.error(err);

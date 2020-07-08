@@ -1,29 +1,116 @@
 'use strict';
 
-const Homey = require('homey');
-const ZwaveDevice = require('homey-meshdriver').ZwaveDevice;
+const { ZwaveDevice } = require('homey-zwavedriver');
 const supportedModes = ['Off', 'Heat', 'Energy Save Heat', 'FULL POWER', 'MANUFACTURER SPECIFC'];
 
 class SpiritZwave extends ZwaveDevice {
-	async onMeshInit() {
+	async onNodeInit({ node }) {
 		//this.printNode();
-		//this.enableDebug();
+		this.enableDebug();
 
-		// Registering Flows
-		this._spiritModeChanged = this.getDriver().spiritModeChanged;
-		this._spiritModeChangedTo = this.getDriver().spiritModeChangedTo;
-		this._spiritManualPosition = this.getDriver().spiritManualPosition;
-		this._spiritProtectionChanged = this.getDriver().spiritProtectionChanged;
-		this._spiritErrorOccurred = this.getDriver().spiritErrorOccurred;
-		this._spiritMode = this.getDriver().spiritMode;
-		this._spiritProtection = this.getDriver().spiritProtection;
-		this._spiritSetEcoTemperature = this.getDriver().spiritSetEcoTemperature;
-		this._spiritManualControl = this.getDriver().spiritManualControl;
-		this._spiritSetMode = this.getDriver().spiritSetMode;
-		this._spiritSetProtection = this.getDriver().spiritSetProtection;
-		this._spiritSendRoomTemperature = this.getDriver().spiritSendRoomTemperature;
+		// Register Flows
+		this._spiritModeChanged = this.homey.flow.getDeviceTriggerCard('spirit_euro_mode_changed')
+		this._spiritManualPosition = this.homey.flow.getDeviceTriggerCard('spirit_euro_manual_position');
+		this._spiritProtectionChanged = this.homey.flow.getDeviceTriggerCard('spirit_protection_changed');
+		this._spiritErrorOccurred = this.homey.flow.getDeviceTriggerCard('spirit_error_occurred');
 
-		// Capabilities
+		this._spiritModeChangedTo = this.homey.flow.getDeviceTriggerCard('spirit_euro_mode_changed_to').registerRunListener(async (args, state) => {
+			if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
+				return (args.mode == state.mode);
+			}
+			return false;
+    });
+
+		this._spiritMode = this.homey.flow.getConditionCard('spirit_euro_mode').registerRunListener(async (args, state) => {
+			const currentMode = await this.getCapabilityValue('eurotronic_mode_spirit');
+
+			if (args.hasOwnProperty('mode') && !(currentMode instanceof Error)) {
+				return (args.mode == currentMode);
+			}
+			return false;
+    });
+
+		this._spiritProtection = this.homey.flow.getConditionCard('spirit_protection').registerRunListener(async (args, state) => {
+			const currentProtection = await this.getCapabilityValue('eurotronic_protection');
+
+			if (args.hasOwnProperty('state') && !(currentProtection instanceof Error)) {
+				return (args.state == currentProtection);
+			}
+			return false;
+    });
+
+		this._spiritSetEcoTemperature = this.homey.flow.getActionCard('spirit_eco_temperature').registerRunListener(async (args, state) => {
+			return await this._sendEconomicTemperature(args.temperature);
+    });
+
+		this._spiritManualControl = this.homey.flow.getActionCard('spirit_manual_control').registerRunListener(async (args, state) => {
+			if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
+
+			const currentMode = this.getCapabilityValue('eurotronic_mode_spirit');
+
+			if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
+				await this._sendMode('MANUFACTURER SPECIFC');
+			}
+
+			await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
+				Value: Math.ceil(args.value * 99),
+				'Dimming Duration': 'Factory default',
+			})
+			.catch(err => {
+				this.error(err);
+				return false;
+			})
+			.then(result => {
+				if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
+
+				this.setCapabilityValue('eurotronic_manual_value', args.value);
+				return true;
+			});
+    });
+
+		this._spiritSetMode = this.homey.flow.getActionCard('spirit_set_euro_mode').registerRunListener(async (args, state) => {
+			return await this._sendMode(args.euro_mode);
+    });
+
+		this._spiritSetProtection = this.homey.flow.getActionCard('spirit_protection').registerRunListener(async (args, state) => {
+			return await this._sendProtection(args.state);
+    });
+
+		this._spiritSendRoomTemperature = this.homey.flow.getActionCard('spirit_external_temperature').registerRunListener(async (args, state) => {
+			if (this.getSetting('external_temperature') === false) return Promise.reject('external_temperature_setting_not_set');
+			if (typeof args.value !== 'number') return Promise.reject('no_temperature_given');
+			let newTemperature;
+
+			try {
+				newTemperature = Buffer.alloc(2);
+				newTemperature.writeUIntBE(Math.round(args.value * 100), 0, 2);
+			} catch(err) {
+				this.error(err);
+				return false;
+			}
+
+			await this.getCommandClass('SENSOR_MULTILEVEL').SENSOR_MULTILEVEL_REPORT({
+				'Sensor Type': 'Temperature (version 1)',
+				Level: {
+					Precision: 2,
+					Scale: 0,
+					Size: 2,
+				},
+				'Sensor Value': newTemperature
+			})
+			.catch(err => {
+				this.error(err);
+				return false;
+			})
+			.then(result => {
+				if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
+
+				this.setCapabilityValue('measure_temperature', args.value);
+				return true;
+			});
+    });
+
+		// Register Capabilities
 		this.registerCapability('measure_battery', 'BATTERY', {
 			getOpts: {
 				getOnOnline: false,
@@ -60,8 +147,8 @@ class SpiritZwave extends ZwaveDevice {
 
 					// Some devices send this when no temperature sensor is connected
 					if (report['Sensor Value (Parsed)'] === -999.9) return null;
-					if (report.Level.Scale === 0) return report['Sensor Value (Parsed)'];
-					if (report.Level.Scale === 1) return (report['Sensor Value (Parsed)'] - 32) / 1.8;
+					if (report.Level.Scale === 0) return report['Sensor Value (Parsed)']; // Celcius
+					if (report.Level.Scale === 1) return (report['Sensor Value (Parsed)'] - 32) / 1.8; // Fahrenheit
 				}
 				return null;
 			},
@@ -84,14 +171,16 @@ class SpiritZwave extends ZwaveDevice {
 					'No of Manufacturer Data fields': 0,
 					Mode: value,
 				},
-				'Manufacturer Data': new Buffer([0]),
+				'Manufacturer Data': Buffer.from([0]),
 			}),
 			report: 'THERMOSTAT_MODE_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
 
 					if (this.getCapabilityValue('eurotronic_mode_spirit')) {
-						this._spiritModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: Homey.__("mode." + report.Level.Mode) }, null);
+						this._spiritModeChanged.trigger(this, { mode: report.Level.Mode, mode_name: this.homey.__("mode." + report.Level.Mode) }, null);
 						this._spiritModeChangedTo.trigger(this, null, { mode: report.Level.Mode });
 					}
 
@@ -113,6 +202,8 @@ class SpiritZwave extends ZwaveDevice {
 			}),
 			report: 'SWITCH_MULTILEVEL_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (typeof report.Value === 'string') {
 					this._spiritManualPosition.trigger(this, { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null);
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
@@ -144,14 +235,20 @@ class SpiritZwave extends ZwaveDevice {
 				getOnStart: true,
 			},
 			set: 'PROTECTION_SET',
-			setParser: value => ({
-				'Protection State': new Buffer([this._parseProtection(value, 'set')]),
-			}),
+			setParser: value => {
+				this.setSettings({ 'child_protection': this._parseProtection(value, 'setting') });
+
+				return {
+					'Protection State': Buffer.from([this._parseProtection(value, 'set')]),
+				};
+			},
 			report: 'PROTECTION_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Protection State')) {
 					this._spiritProtectionChanged.trigger(this, { state: this._parseProtection(report['Protection State'], 'flow') }, null);
-					this.setSettings({ child_protection: this._parseProtection(report['Protection State'], 'setting') });
+					this.setSettings({ 'child_protection': this._parseProtection(report['Protection State'], 'setting') });
 
 					return this._parseProtection(report['Protection State'], 'capability');
 				}
@@ -162,7 +259,7 @@ class SpiritZwave extends ZwaveDevice {
 		// Report listener
 		this.registerReportListener('NOTIFICATION', 'NOTIFICATION_REPORT', report => {
 			if (report.hasOwnProperty('Notification Type') && report.hasOwnProperty('Event') && report['Notification Type'] === 'System') {
-				this._spiritErrorOccurred.trigger(this, { error: Homey.__('error.valve.' + report.Event.toString()) }, null);
+				this._spiritErrorOccurred.trigger(this, { error: this.homey.__('error.valve.' + report.Event.toString()) }, null);
 			}
 		});
 
@@ -185,7 +282,7 @@ class SpiritZwave extends ZwaveDevice {
 				return value * 10;
 			} else {
 				this.setCapabilityValue('measure_temperature', 0);
-				return new Buffer([128]);
+				return Buffer.from([128]);
 			}
 		});
 
@@ -195,111 +292,18 @@ class SpiritZwave extends ZwaveDevice {
 				return this.getSetting('measure_temperature_calibration') * 10;
 			} else {
 				this.setCapabilityValue('measure_temperature', 0);
-				return new Buffer([128]);
+				return Buffer.from([128]);
 			}
 		});
 
-		this.registerSetting('child_protection', value => this._sendProtection(value));
+		this.registerSetting('child_protection', value => {
+			this._sendProtection(value);
+			this.setCapabilityValue('eurotronic_protection', this._parseProtection(value, 'capability'));
+		});
 		this.registerSetting('economic_temperature', value => this._sendEconomicTemperature(value));
 	}
-
-	// Parsing Flows
-	spiritModeChangedRunListener(args, state) {
-		if (args.hasOwnProperty('mode') && state.hasOwnProperty('mode')) {
-			return Promise.resolve(args.mode === state.mode);
-		}
-		return Promise.resolve(false);
-	}
-
-	spiritModeRunListener(args) {
-		const currentMode = this.getCapabilityValue('eurotronic_mode_spirit');
-
-		if (args.hasOwnProperty('mode') && !(currentMode instanceof Error)) {
-			return Promise.resolve(args.mode === currentMode);
-		}
-		return Promise.resolve(false);
-	}
-
-	spiritProtectionRunListener(args) {
-		const currentProtection = this.getCapabilityValue('eurotronic_protection');
-
-		if (args.hasOwnProperty('state') && !(currentProtection instanceof Error)) {
-			return Promise.resolve(args.state === currentProtection);
-		}
-		return Promise.resolve(false);
-	}
-
-	async spiritSetEcoTemperatureRunListener(args, state) {
-		return await this._sendEconomicTemperature(args.temperature);
-	}
-
-	async spiritManualControlRunListener(args, state) {
-		if (!args.hasOwnProperty('value')) return Promise.reject('no_value_given');
-
-		const currentMode = this.getCapabilityValue('eurotronic_mode_spirit');
-
-		if (!currentMode || currentMode !== 'MANUFACTURER SPECIFC')	{
-			await this._sendMode('MANUFACTURER SPECIFC');
-		}
-
-		await this.getCommandClass('SWITCH_MULTILEVEL').SWITCH_MULTILEVEL_SET({
-			Value: Math.ceil(args.value * 99),
-			'Dimming Duration': 'Factory default',
-		})
-		.catch(err => {
-			this.error(err);
-			return Promise.reject(err);
-		})
-		.then(result => {
-			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
-
-			this.setCapabilityValue('eurotronic_manual_value', args.value);
-			return Promise.resolve();
-		});
-	}
-
-	async spiritSetModeRunListener(args, state) {
-		return await this._sendMode(args.euro_mode);
-	}
-
-	async spiritSetProtectionRunListener(args, state) {
-		return await this._sendProtection(args.state);
-	}
-
-	async spiritSendRoomTemperatureRunListener(args, state) {
-		if (this.getSetting('external_temperature') === false) return Promise.reject('external_temperature_setting_not_set');
-		if (typeof args.value !== 'number') return Promise.reject('no_temperature_given');
-		let newTemperature;
-
-		try {
-			newTemperature = new Buffer(2);
-			newTemperature.writeUIntBE(Math.round(args.value * 100), 0, 2);
-		} catch(err) {
-			this.error(err);
-			return Promise.reject('failed_to_create_buffer');
-		}
-
-		await this.getCommandClass('SENSOR_MULTILEVEL').SENSOR_MULTILEVEL_REPORT({
-			'Sensor Type': 'Temperature (version 1)',
-			Level: {
-				Precision: 2,
-				Scale: 0,
-				Size: 2,
-			},
-			'Sensor Value': newTemperature
-		})
-		.catch(err => {
-			this.error(err);
-			return Promise.reject(err);
-		})
-		.then(result => {
-			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
-
-			this.setCapabilityValue('measure_temperature', args.value);
-			return Promise.resolve();
-		});
-	}
-
+	
+	// Basic Functions
 	async _sendMode(mode) {
 		if (typeof mode === 'undefined') return Promise.reject('no_mode_given')
 		if (supportedModes.indexOf(mode) < 0) return Promise.reject('mode_unsupported');
@@ -309,7 +313,7 @@ class SpiritZwave extends ZwaveDevice {
 				'No of Manufacturer Data fields': 0,
 				Mode: mode,
 			},
-			'Manufacturer Data': new Buffer([0]),
+			'Manufacturer Data': Buffer.from([0]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -329,7 +333,7 @@ class SpiritZwave extends ZwaveDevice {
 		let newTemperature;
 
 		try {
-			newTemperature = new Buffer(2);
+			newTemperature = Buffer.alloc(2);
 			newTemperature.writeUIntBE((temperature * 2).toFixed() / 2 * 10, 0, 2);
 		} catch(err) {
 			this.error(err);
@@ -363,7 +367,7 @@ class SpiritZwave extends ZwaveDevice {
 		if (typeof state === 'undefined') return Promise.reject('no_state_given');
 
 		await this.getCommandClass('PROTECTION').PROTECTION_SET({
-			'Protection State': new Buffer([this._parseProtection(state, 'set')]),
+			'Protection State': Buffer.from([this._parseProtection(state, 'set')]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -372,7 +376,7 @@ class SpiritZwave extends ZwaveDevice {
 		.then(result => {
 			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
 
-			this.setSettings({ child_protection: this._parseProtection(state, 'setting') });
+			this.setSettings({ 'child_protection': this._parseProtection(state, 'setting') });
 			return Promise.resolve(state);
 		});
 	}
@@ -406,7 +410,7 @@ class SpiritZwave extends ZwaveDevice {
 			}
 		}
 
-		if (to === 'setting') newValue.toString();
+		if (to === 'setting') newValue = '' + newValue;
 
 		return newValue;
 	}

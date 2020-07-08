@@ -1,0 +1,25 @@
+{
+  "title": {
+    "en": "Protection state changed",
+    "nl": "Beveiliging status veranderd"
+  },
+  "tokens": [
+    {
+      "name": "state",
+      "title": {
+        "en": "state"
+      },
+      "example": {
+        "en": "unprotected",
+        "nl": "onbeveiligd"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=spirit_zwave|spirit_al_zwave"
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+[
+	{
+		"id": "flip_screen",
+		"type": "checkbox",
+		"zwave": {
+			"index": 1,
+			"size": 1
+		},
+		"label": {
+			"en": "Flipped screen",
+			"nl": "Scherm omgedraait"
+		},
+		"hint": {
+			"en": "This will rotate the screen 180 degrees.",
+			"nl": "Dit zal het scherm 180 graden draaien."
+		},
+		"value": false
+	},
+	{
+		"id": "screen_timeout",
+		"type": "number",
+		"zwave": {
+			"index": 2,
+			"size": 1
+		},
+		"label": {
+			"en": "Screen timeout",
+			"nl": "Scherm timeout"
+		},
+		"hint": {
+			"en": "After how many seconds should the screen turn off.\nDefault: 0 seconds.\nMinimal: 5 seconds.\nDisabled: 0.",
+			"nl": "Na hoeveel seconden hoort het scherm uit te gaan.\nStandaard: 0.\nMinimaal: 5 seconden.\nGedactiveerd: 0."
+		},
+		"value": 0,
+		"attr": {
+			"min": 0,
+			"max": 30
+		}
+	},
+	{
+		"id": "backlight",
+		"type": "checkbox",
+		"zwave": {
+			"index": 3,
+			"size": 1
+		},
+		"label": {
+			"en": "Backlight on",
+			"nl": "Achtergrond verlichting aan"
+		},
+		"value": true
+	},
+	{
+		"id": "battery_report",
+		"type": "dropdown",
+		"zwave": {
+			"index": 4,
+			"size": 1
+		},
+		"label": {
+			"en": "Battery level report",
+			"nl": "Batterij niveau verzending"
+		},
+		"hint": {
+			"en": "It only sends in steps of 5%.",
+			"nl": "Het stuurt alleen in stappen van 5%."
+		},
+		"value": "1",
+		"values": [
+			{
+				"id": "0",
+				"label": {
+					"en": "Only when the battery level is low",
+					"nl": "Alleen wanneer het batterij niveau laag is"
+				}
+			},
+			{
+				"id": "1",
+				"label": {
+					"en": "Once a day",
+					"nl": "Eens per dag"
+				}
+			}
+		]
+	},
+	{
+		"id": "temperature_threshold",
+		"type": "number",
+		"zwave": {
+			"index": 5,
+			"size": 1
+		},
+		"label": {
+			"en": "Measured temperature threshold",
+			"nl": "Gemeten temperatuur drempel"
+		},
+		"hint": {
+			"en": "How much must the temperature change between 2 measurements, before it is being send.\nSteps: 0.1 °C\nDefault: 0.1 °C.\nDisabled: 0.",
+			"nl": "Hoeveel moet de temperatuur veranderen tussen 2 metingen in, voor het wordt verzonden.\nStappen: 0,1 °C\nStandaard: 0,1 °C.\nGedactiveerd: 0."
+		},
+		"value": 0.1,
+		"attr": {
+			"min": 0,
+			"max": 5,
+			"step": 0.1
+		}
+	},
+	{
+		"id": "valve_threshold",
+		"type": "number",
+		"zwave": {
+			"index": 6,
+			"size": 1
+		},
+		"label": {
+			"en": "Manual valve threshold",
+			"nl": "Handmatige kraan drempel"
+		},
+		"hint": {
+			"en": "How much must the valve position change, in manual mode, before it is being send.\nDefault: 0%.\nDisabled: 0.",
+			"nl": "Hoeveel moet de kraan positie veranderen, in handmatige modus, voor het wordt verzonden.\nStandaard: 0%.\nGedactiveerd: 0."
+		},
+		"value": 0,
+		"attr": {
+			"min": 0,
+			"max": 100
+		}
+	},
+	{
+		"id": "window_open_detection",
+		"type": "dropdown",
+		"zwave": {
+			"index": 7,
+			"size": 1
+		},
+		"label": {
+			"en": "Window open sensitivity",
+			"nl": "Raam open gevoeligheid"
+		},
+		"value": "2",
+		"values": [
+			{
+				"id": "0",
+				"label": {
+					"en": "Disabled",
+					"nl": "Gedeactiveerd"
+				}
+			},
+			{
+				"id": "1",
+				"label": {
+					"en": "Low",
+					"nl": "Laag"
+				}
+			},
+			{
+				"id": "2",
+				"label": {
+					"en": "Middle (default)",
+					"nl": "Middel (standaard)"
+				}
+			},
+			{
+				"id": "3",
+				"label": {
+					"en": "High",
+					"nl": "Hoog"
+				}
+			}
+		]
+	},
+	{
+		"id": "measure_temperature_calibration",
+		"type": "number",
+		"zwave": {
+			"index": 8,
+			"size": 1
+		},
+		"label": {
+			"en": "Measured temperature calibration",
+			"nl": "Gemeten temperatuur calibratie"
+		},
+		"hint": {
+			"en": "Default: 0 °C",
+			"nl": "Standaard: 0 °C"
+		},
+		"value": 0,
+		"attr": {
+			"min": -5,
+			"max": 5,
+			"step": 0.1
+		}
+	},
+	{
+		"id": "external_temperature",
+		"type": "checkbox",
+		"zwave": {
+			"index": 8,
+			"size": 1
+		},
+		"label": {
+			"en": "(External) Room temperature",
+			"nl": "(Externe) Kamer temperatuur"
+		},
+		"hint": {
+			"en": "When enabled, the Spirit will use the temperature send in a flow, or an associated temperature measuring device, as the room temperature.\n\nThis wil disable the temperature measuring on the Spirit itself",
+			"nl": "Wanneer geactiveerd, zal de Spirit een in flow verzonden temperatuur, of een geassocieerd temperatuur metend apparaat gebruiken, voor de kamer temperatuur.\n\nDit zal de temperatuur meting van de Spirit zelf deactiveren"
+		},
+		"value": false
+	},
+	{
+		"id": "child_protection",
+		"type": "dropdown",
+		"label": {
+			"en": "Protection state",
+			"nl": "Beveiliging status"
+		},
+		"hint": {
+			"en": "You can (un)lock by holding the plus and minus buttons.",
+			"nl": "Je kan (ont)grendelen door de plus en min knoppen in te houden."
+		},
+		"value": "0",
+		"values": [
+			{
+				"id": "0",
+				"label": {
+					"en": "Unprotected",
+					"nl": "Onbeveiligd"
+				}
+			},
+			{
+				"id": "1",
+				"label": {
+					"en": "Unlockable Protected",
+					"nl": "Ontgrendelbaar Beveiligd"
+				}
+			},
+			{
+				"id": "2",
+				"label": {
+					"en": "Protected",
+					"nl": "Beveiligd"
+				}
+			}
+		]
+	},
+	{
+		"id": "economic_temperature",
+		"type": "number",
+		"label": {
+			"en": "Temperature economy mode",
+			"nl": "Temperatuur economie modus"
+		},
+		"value": 18,
+		"attr": {
+			"min": 8,
+			"max": 28,
+			"step": 0.1
+		}
+	}
+]
