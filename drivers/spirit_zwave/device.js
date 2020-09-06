@@ -34,6 +34,8 @@ class SpiritZwave extends ZwaveDevice {
 		this.registerCapability('measure_battery', 'NOTIFICATION', {
 			report: 'NOTIFICATION_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Notification Type') && report.hasOwnProperty('Event') && report['Notification Type'] === 'Power Management') {
 						if (report['Event'] === 10) return 25;
 						if (report['Event'] === 11) return 15;
@@ -49,6 +51,7 @@ class SpiritZwave extends ZwaveDevice {
 			report: 'SENSOR_MULTILEVEL_REPORT',
 			reportParserOverride: true,
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
 				if (this.getSetting('external_temperature')) return null;
 
 				if (report &&
@@ -84,10 +87,12 @@ class SpiritZwave extends ZwaveDevice {
 					'No of Manufacturer Data fields': 0,
 					Mode: value,
 				},
-				'Manufacturer Data': new Buffer([0]),
+				'Manufacturer Data': Buffer.from([0]),
 			}),
 			report: 'THERMOSTAT_MODE_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Level') && report.Level.hasOwnProperty('Mode')) {
 
 					if (this.getCapabilityValue('eurotronic_mode_spirit')) {
@@ -113,6 +118,8 @@ class SpiritZwave extends ZwaveDevice {
 			}),
 			report: 'SWITCH_MULTILEVEL_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (typeof report.Value === 'string') {
 					this._spiritManualPosition.trigger(this, { value: (report.Value === 'on/enable') ? 1.0 : 0.0 }, null);
 					return (report.Value === 'on/enable') ? 1.0 : 0.0;
@@ -144,14 +151,20 @@ class SpiritZwave extends ZwaveDevice {
 				getOnStart: true,
 			},
 			set: 'PROTECTION_SET',
-			setParser: value => ({
-				'Protection State': new Buffer([this._parseProtection(value, 'set')]),
-			}),
+			setParser: value => {
+				this.setSettings({ 'child_protection': this._parseProtection(value, 'setting') });
+
+				return {
+					'Protection State': Buffer.from([this._parseProtection(value, 'set')]),
+				};
+			},
 			report: 'PROTECTION_REPORT',
 			reportParser: report => {
+				if (typeof report === 'undefined') return null;
+
 				if (report.hasOwnProperty('Protection State')) {
 					this._spiritProtectionChanged.trigger(this, { state: this._parseProtection(report['Protection State'], 'flow') }, null);
-					this.setSettings({ child_protection: this._parseProtection(report['Protection State'], 'setting') });
+					this.setSettings({ 'child_protection': this._parseProtection(report['Protection State'], 'setting') });
 
 					return this._parseProtection(report['Protection State'], 'capability');
 				}
@@ -162,7 +175,7 @@ class SpiritZwave extends ZwaveDevice {
 		// Report listener
 		this.registerReportListener('NOTIFICATION', 'NOTIFICATION_REPORT', report => {
 			if (report.hasOwnProperty('Notification Type') && report.hasOwnProperty('Event') && report['Notification Type'] === 'System') {
-				this._spiritErrorOccurred.trigger(this, { error: Homey.__('error.valve.' + report.Event.toString()) }, null);
+				this._spiritErrorOccurred.trigger(this, { error: Homey.__('error.valve.' + report.Event) }, null);
 			}
 		});
 
@@ -185,7 +198,7 @@ class SpiritZwave extends ZwaveDevice {
 				return value * 10;
 			} else {
 				this.setCapabilityValue('measure_temperature', 0);
-				return new Buffer([128]);
+				return Buffer.from([128]);
 			}
 		});
 
@@ -195,11 +208,14 @@ class SpiritZwave extends ZwaveDevice {
 				return this.getSetting('measure_temperature_calibration') * 10;
 			} else {
 				this.setCapabilityValue('measure_temperature', 0);
-				return new Buffer([128]);
+				return Buffer.from([128]);
 			}
 		});
 
-		this.registerSetting('child_protection', value => this._sendProtection(value));
+		this.registerSetting('child_protection', value => {
+			this._sendProtection(value);
+		});
+
 		this.registerSetting('economic_temperature', value => this._sendEconomicTemperature(value));
 	}
 
@@ -272,7 +288,7 @@ class SpiritZwave extends ZwaveDevice {
 		let newTemperature;
 
 		try {
-			newTemperature = new Buffer(2);
+			newTemperature = Buffer.alloc(2);
 			newTemperature.writeUIntBE(Math.round(args.value * 100), 0, 2);
 		} catch(err) {
 			this.error(err);
@@ -309,7 +325,7 @@ class SpiritZwave extends ZwaveDevice {
 				'No of Manufacturer Data fields': 0,
 				Mode: mode,
 			},
-			'Manufacturer Data': new Buffer([0]),
+			'Manufacturer Data': Buffer.from([0]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -329,7 +345,7 @@ class SpiritZwave extends ZwaveDevice {
 		let newTemperature;
 
 		try {
-			newTemperature = new Buffer(2);
+			newTemperature = Buffer.alloc(2);
 			newTemperature.writeUIntBE((temperature * 2).toFixed() / 2 * 10, 0, 2);
 		} catch(err) {
 			this.error(err);
@@ -363,7 +379,7 @@ class SpiritZwave extends ZwaveDevice {
 		if (typeof state === 'undefined') return Promise.reject('no_state_given');
 
 		await this.getCommandClass('PROTECTION').PROTECTION_SET({
-			'Protection State': new Buffer([this._parseProtection(state, 'set')]),
+			'Protection State': Buffer.from([this._parseProtection(state, 'set')]),
 		})
 		.catch(err => {
 			this.error(err);
@@ -372,7 +388,8 @@ class SpiritZwave extends ZwaveDevice {
 		.then(result => {
 			if (result !== 'TRANSMIT_COMPLETE_OK') return Promise.reject(result);
 
-			this.setSettings({ child_protection: this._parseProtection(state, 'setting') });
+			this.setSettings({ 'child_protection': this._parseProtection(state, 'setting') });
+			this.setCapabilityValue('eurotronic_protection', this._parseProtection(value, 'capability'));
 			return Promise.resolve(state);
 		});
 	}
@@ -406,7 +423,7 @@ class SpiritZwave extends ZwaveDevice {
 			}
 		}
 
-		if (to === 'setting') newValue.toString();
+		if (to === 'setting') newValue = '' + newValue;
 
 		return newValue;
 	}
